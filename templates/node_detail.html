@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}节点详情 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 id="nodeTitle">加载中...</h1>
+    <div class="page-actions">
+        <select id="statusSelect" onchange="updateNodeStatus()">
+            <option value="TODO">⬜ 未开始</option>
+            <option value="WIP">🔵 研究中</option>
+            <option value="DONE">✅ 已完成</option>
+            <option value="GAP">⚠️ 待补充</option>
+            <option value="HOLD">⏸️ 暂缓</option>
+        </select>
+        <select id="prioritySelect" onchange="updateNodePriority()">
+            <option value="high">高优先级</option>
+            <option value="medium">中优先级</option>
+            <option value="low">低优先级</option>
+        </select>
+    </div>
+</div>
+
+<!-- 节点信息栏 -->
+<div class="node-info-bar" id="nodeInfo">
+    <div class="info-item">
+        <span class="info-label">关系类型</span>
+        <span id="infoRelation" class="info-value">-</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">上级节点</span>
+        <span id="infoParent" class="info-value">-</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">子节点</span>
+        <span id="infoChildren" class="info-value">-</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">最后更新</span>
+        <span id="infoUpdated" class="info-value">-</span>
+    </div>
+</div>
+
+<!-- 内容区 -->
+<div class="content-tabs">
+    <button class="tab-btn active" onclick="setTab('view')">查看</button>
+    <button class="tab-btn" onclick="setTab('edit')">编辑</button>
+</div>
+
+<div id="viewTab" class="tab-content active">
+    <div class="markdown-body" id="researchContent">
+        <p class="text-muted">加载中...</p>
+    </div>
+</div>
+
+<div id="editTab" class="tab-content">
+    <textarea id="editor" class="markdown-editor" spellcheck="false"></textarea>
+    <div class="editor-actions">
+        <button class="btn btn-primary" onclick="saveContent()">保存</button>
+        <button class="btn" onclick="setTab('view')">取消</button>
+        <span id="saveStatus" class="text-muted"></span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const nodeId = '{{ node_id }}';
+let nodeData = null;
+
+async function loadNode() {
+    const res = await fetch(`/api/node/${nodeId}`);
+    if (!res.ok) {
+        document.getElementById('nodeTitle').textContent = `节点 ${nodeId} 不存在`;
+        return;
+    }
+    nodeData = await res.json();
+    const n = nodeData.node;
+
+    document.getElementById('nodeTitle').textContent = `${n.id} ${n.name}`;
+    document.getElementById('statusSelect').value = n.status || 'TODO';
+    document.getElementById('prioritySelect').value = n.priority || 'medium';
+
+    const relMap = { TAX: '分类关系', PROC: '工艺关系', SUPP: '供应关系' };
+    document.getElementById('infoRelation').textContent = relMap[n.relation_type] || n.relation_type || '-';
+    document.getElementById('infoParent').textContent = nodeData.parent_name ? `${n.parent} ${nodeData.parent_name}` : '顶级节点';
+    document.getElementById('infoChildren').textContent = nodeData.children_info.map(c => `${c.id} ${c.name}`).join(', ') || '无';
+    document.getElementById('infoUpdated').textContent = n.last_updated || '-';
+
+    // 渲染 Markdown
+    const content = nodeData.content || '（暂无研究内容，点击"编辑"开始填写）';
+    document.getElementById('researchContent').innerHTML = marked.parse(content);
+    document.getElementById('editor').value = nodeData.content || '';
+}
+
+function setTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tab + 'Tab').classList.add('active');
+}
+
+async function updateNodeStatus() {
+    const status = document.getElementById('statusSelect').value;
+    await fetch(`/api/node/${nodeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+    });
+}
+
+async function updateNodePriority() {
+    const priority = document.getElementById('prioritySelect').value;
+    await fetch(`/api/node/${nodeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priority })
+    });
+}
+
+async function saveContent() {
+    const content = document.getElementById('editor').value;
+    document.getElementById('saveStatus').textContent = '保存中...';
+    const res = await fetch(`/api/node/${nodeId}/file`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+    });
+    const data = await res.json();
+    if (data.ok) {
+        document.getElementById('saveStatus').textContent = '✅ 已保存: ' + data.file;
+        document.getElementById('researchContent').innerHTML = marked.parse(content);
+    } else {
+        document.getElementById('saveStatus').textContent = '❌ 保存失败';
+    }
+}
+
+loadNode();
+</script>
+{% endblock %}

@@ -1,0 +1,799 @@
+industry: 芯片
+created: 2026-10-15 14:48
+nodes:
+  '01':
+    id: '01'
+    name: 芯片产品
+    relation_type: TAX
+    parent: null
+    status: TODO
+    priority: medium
+    description: 芯片产品分类体系，按功能用途划分
+    children:
+    - '01.01'
+    - '01.02'
+    - '01.03'
+    - '01.04'
+    - '01.05'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '01.01':
+    id: '01.01'
+    name: 数字芯片
+    relation_type: TAX
+    parent: '01'
+    status: TODO
+    priority: medium
+    description: ''
+    children:
+    - 01.01.01
+    - 01.01.02
+    - 01.01.03
+    - 01.01.04
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.01.01:
+    id: 01.01.01
+    name: 处理器芯片(CPU/GPU)
+    relation_type: TAX
+    parent: '01.01'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.01.02:
+    id: 01.01.02
+    name: 存储芯片(DRAM/NAND/NOR)
+    relation_type: TAX
+    parent: '01.01'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.01.03:
+    id: 01.01.03
+    name: 逻辑芯片(FPGA/ASIC)
+    relation_type: TAX
+    parent: '01.01'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.01.04:
+    id: 01.01.04
+    name: SoC芯片
+    relation_type: TAX
+    parent: '01.01'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '01.02':
+    id: '01.02'
+    name: 模拟芯片
+    relation_type: TAX
+    parent: '01'
+    status: TODO
+    priority: medium
+    description: ''
+    children:
+    - 01.02.01
+    - 01.02.02
+    - 01.02.03
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.02.01:
+    id: 01.02.01
+    name: 电源管理芯片
+    relation_type: TAX
+    parent: '01.02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.02.02:
+    id: 01.02.02
+    name: 信号链芯片(ADC/DAC/运放)
+    relation_type: TAX
+    parent: '01.02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.02.03:
+    id: 01.02.03
+    name: 射频芯片
+    relation_type: TAX
+    parent: '01.02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '01.03':
+    id: '01.03'
+    name: 分立器件
+    relation_type: TAX
+    parent: '01'
+    status: TODO
+    priority: medium
+    description: ''
+    children:
+    - 01.03.01
+    - 01.03.02
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.03.01:
+    id: 01.03.01
+    name: 功率器件(IGBT/MOSFET/SiC/GaN)
+    relation_type: TAX
+    parent: '01.03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.03.02:
+    id: 01.03.02
+    name: 二极管/三极管
+    relation_type: TAX
+    parent: '01.03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '01.04':
+    id: '01.04'
+    name: 传感器芯片
+    relation_type: TAX
+    parent: '01'
+    status: TODO
+    priority: medium
+    description: ''
+    children:
+    - 01.04.01
+    - 01.04.02
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.04.01:
+    id: 01.04.01
+    name: CMOS图像传感器(CIS)
+    relation_type: TAX
+    parent: '01.04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.04.02:
+    id: 01.04.02
+    name: MEMS传感器
+    relation_type: TAX
+    parent: '01.04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '01.05':
+    id: '01.05'
+    name: 光电子芯片
+    relation_type: TAX
+    parent: '01'
+    status: TODO
+    priority: medium
+    description: ''
+    children:
+    - 01.05.01
+    - 01.05.02
+    - 01.05.03
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.05.01:
+    id: 01.05.01
+    name: LED芯片
+    relation_type: TAX
+    parent: '01.05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.05.02:
+    id: 01.05.02
+    name: 激光器芯片
+    relation_type: TAX
+    parent: '01.05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  01.05.03:
+    id: 01.05.03
+    name: 光通信芯片
+    relation_type: TAX
+    parent: '01.05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02':
+    id: '02'
+    name: 芯片设计
+    relation_type: PROC
+    parent: null
+    status: TODO
+    priority: medium
+    description: 芯片设计环节，从架构定义到GDSII
+    children:
+    - '02.01'
+    - '02.02'
+    - '02.03'
+    - '02.04'
+    - '02.05'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02.01':
+    id: '02.01'
+    name: 架构定义
+    relation_type: TAX
+    parent: '02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02.02':
+    id: '02.02'
+    name: 前端设计(RTL/逻辑综合)
+    relation_type: TAX
+    parent: '02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02.03':
+    id: '02.03'
+    name: 后端设计(布局布线)
+    relation_type: TAX
+    parent: '02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02.04':
+    id: '02.04'
+    name: 设计验证
+    relation_type: TAX
+    parent: '02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '02.05':
+    id: '02.05'
+    name: 可测性设计(DFT)
+    relation_type: TAX
+    parent: '02'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03':
+    id: '03'
+    name: 晶圆制造
+    relation_type: PROC
+    parent: null
+    status: TODO
+    priority: medium
+    description: 晶圆制造（前道工艺），从硅片到成品晶圆
+    children:
+    - '03.01'
+    - '03.02'
+    - '03.03'
+    - '03.04'
+    - '03.05'
+    - '03.06'
+    - '03.07'
+    - '03.08'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.01':
+    id: '03.01'
+    name: 氧化/扩散
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.02':
+    id: '03.02'
+    name: 光刻
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.03':
+    id: '03.03'
+    name: 刻蚀
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.04':
+    id: '03.04'
+    name: 薄膜沉积(CVD/PVD/ALD)
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.05':
+    id: '03.05'
+    name: 离子注入
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.06':
+    id: '03.06'
+    name: 化学机械抛光(CMP)
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.07':
+    id: '03.07'
+    name: 清洗
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '03.08':
+    id: '03.08'
+    name: 检测与量测
+    relation_type: TAX
+    parent: '03'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '04':
+    id: '04'
+    name: 封装测试
+    relation_type: PROC
+    parent: null
+    status: TODO
+    priority: medium
+    description: 封装和测试环节（后道工艺）
+    children:
+    - '04.01'
+    - '04.02'
+    - '04.03'
+    - '04.04'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '04.01':
+    id: '04.01'
+    name: 传统封装(DIP/SOP/QFP/BGA)
+    relation_type: TAX
+    parent: '04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '04.02':
+    id: '04.02'
+    name: 先进封装(WLP/2.5D/3D/Chiplet)
+    relation_type: TAX
+    parent: '04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '04.03':
+    id: '04.03'
+    name: 晶圆测试(CP)
+    relation_type: TAX
+    parent: '04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '04.04':
+    id: '04.04'
+    name: 成品测试(FT)
+    relation_type: TAX
+    parent: '04'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05':
+    id: '05'
+    name: 半导体材料
+    relation_type: SUPP
+    parent: null
+    status: TODO
+    priority: medium
+    description: 芯片制造所需各类材料
+    children:
+    - '05.01'
+    - '05.02'
+    - '05.03'
+    - '05.04'
+    - '05.05'
+    - '05.06'
+    - '05.07'
+    - '05.08'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.01':
+    id: '05.01'
+    name: 硅片/衬底
+    relation_type: TAX
+    parent: '05'
+    status: WIP
+    priority: high
+    description: ''
+    children: []
+    research_file: nodes/芯片/05-半导体材料/05.01-硅片衬底.md
+    last_updated: '2026-10-15'
+  '05.02':
+    id: '05.02'
+    name: 光刻胶及配套材料
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.03':
+    id: '05.03'
+    name: 电子特气
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.04':
+    id: '05.04'
+    name: 湿电子化学品
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.05':
+    id: '05.05'
+    name: 靶材/蒸发料
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.06':
+    id: '05.06'
+    name: CMP抛光材料
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.07':
+    id: '05.07'
+    name: 封装基板/引线框架
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '05.08':
+    id: '05.08'
+    name: 第三代半导体衬底(SiC/GaN)
+    relation_type: TAX
+    parent: '05'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06':
+    id: '06'
+    name: 半导体设备
+    relation_type: SUPP
+    parent: null
+    status: TODO
+    priority: medium
+    description: 芯片制造所需各类设备
+    children:
+    - '06.01'
+    - '06.02'
+    - '06.03'
+    - '06.04'
+    - '06.05'
+    - '06.06'
+    - '06.07'
+    - '06.08'
+    - '06.09'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.01':
+    id: '06.01'
+    name: 光刻机
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.02':
+    id: '06.02'
+    name: 刻蚀设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.03':
+    id: '06.03'
+    name: 薄膜沉积设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.04':
+    id: '06.04'
+    name: 离子注入设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.05':
+    id: '06.05'
+    name: CMP设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.06':
+    id: '06.06'
+    name: 清洗设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.07':
+    id: '06.07'
+    name: 检测/量测设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.08':
+    id: '06.08'
+    name: 封装设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '06.09':
+    id: '06.09'
+    name: 测试设备
+    relation_type: TAX
+    parent: '06'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '07':
+    id: '07'
+    name: EDA与IP
+    relation_type: SUPP
+    parent: null
+    status: TODO
+    priority: medium
+    description: 芯片设计所需的EDA工具和IP核
+    children:
+    - '07.01'
+    - '07.02'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '07.01':
+    id: '07.01'
+    name: EDA工具
+    relation_type: TAX
+    parent: '07'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '07.02':
+    id: '07.02'
+    name: IP核授权
+    relation_type: TAX
+    parent: '07'
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  08:
+    id: 08
+    name: 支撑体系
+    relation_type: TAX
+    parent: null
+    status: TODO
+    priority: medium
+    description: 产业服务平台、科研院所、行业协会等
+    children:
+    - '08.01'
+    - '08.02'
+    - '08.03'
+    - '08.04'
+    research_file: ''
+    last_updated: '2026-10-15'
+  '08.01':
+    id: '08.01'
+    name: 产业平台/园区
+    relation_type: TAX
+    parent: 08
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '08.02':
+    id: '08.02'
+    name: 科研院所/高校
+    relation_type: TAX
+    parent: 08
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '08.03':
+    id: '08.03'
+    name: 行业协会/联盟
+    relation_type: TAX
+    parent: 08
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'
+  '08.04':
+    id: '08.04'
+    name: 检测认证机构
+    relation_type: TAX
+    parent: 08
+    status: TODO
+    priority: medium
+    description: ''
+    children: []
+    research_file: ''
+    last_updated: '2026-10-15'

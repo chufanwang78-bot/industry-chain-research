@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}产业链图谱 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>产业链图谱</h1>
+    <div class="page-actions">
+        <div class="view-toggle">
+            <button class="btn-toggle active" onclick="setView('tree')">树形图</button>
+            <button class="btn-toggle" onclick="setView('graph')">关系图</button>
+        </div>
+        <select id="depthFilter" onchange="updateChart()">
+            <option value="99">全部层级</option>
+            <option value="1">仅一级</option>
+            <option value="2">到二级</option>
+            <option value="3">到三级</option>
+        </select>
+    </div>
+</div>
+
+<div class="chart-full">
+    <div id="chainChart" style="width: 100%; height: calc(100vh - 160px);"></div>
+</div>
+
+<!-- 节点详情浮层 -->
+<div id="nodePopup" class="node-popup hidden">
+    <div class="popup-header">
+        <span id="popupTitle"></span>
+        <button class="popup-close" onclick="closePopup()">×</button>
+    </div>
+    <div class="popup-body" id="popupBody"></div>
+    <div class="popup-footer">
+        <a id="popupLink" href="#" class="btn btn-primary">查看详情</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let chart;
+let currentView = 'tree';
+let graphData = null;
+
+async function loadData() {
+    const res = await fetch('/api/graph');
+    graphData = await res.json();
+    renderChart();
+}
+
+function setView(view) {
+    currentView = view;
+    document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    renderChart();
+}
+
+function renderChart() {
+    if (!graphData) return;
+    const maxDepth = parseInt(document.getElementById('depthFilter').value);
+
+    if (!chart) {
+        chart = echarts.init(document.getElementById('chainChart'));
+        chart.on('click', params => {
+            if (params.data && params.data.id) {
+                showPopup(params.data);
+            }
+        });
+    }
+
+    if (currentView === 'tree') {
+        renderTree(maxDepth);
+    } else {
+        renderGraph(maxDepth);
+    }
+}
+
+function renderTree(maxDepth) {
+    // 构建树形数据
+    const nodeMap = {};
+    graphData.nodes.forEach(n => {
+        nodeMap[n.id] = {
+            name: n.name,
+            id: n.id,
+            meta: n.meta,
+            itemStyle: n.itemStyle,
+            children: []
+        };
+    });
+
+    const roots = [];
+    graphData.nodes.forEach(n => {
+        const parentId = n.meta.parent;
+        if (parentId && nodeMap[parentId] && n.id.split('.').length <= maxDepth) {
+            nodeMap[parentId].children.push(nodeMap[n.id]);
+        } else if (!parentId && n.id.split('.').length <= maxDepth) {
+            roots.push(nodeMap[n.id]);
+        }
+    });
+
+    chart.setOption({
+        tooltip: {
+            trigger: 'item',
+            formatter: params => {
+                const d = params.data;
+                if (!d.meta) return d.name;
+                const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
+                return `<strong>${d.id} ${d.name}</strong><br>
+                    状态: ${statusMap[d.meta.status] || d.meta.status}<br>
+                    点击查看详情`;
+            }
+        },
+        series: [{
+            type: 'tree',
+            data: roots,
+            orient: 'LR',
+            top: '5%',
+            bottom: '5%',
+            left: '15%',
+            right: '25%',
+            symbolSize: 10,
+            lineStyle: { color: '#94a3b8', width: 1.5 },
+            label: {
+                position: 'left',
+                verticalAlign: 'middle',
+                fontSize: 13,
+                formatter: params => {
+                    const d = params.data;
+                    const statusIcon = {DONE:'✅',WIP:'🔵',TODO:'⬜',GAP:'⚠️',HOLD:'⏸️'}[d.meta?.status] || '';
+                    return `${statusIcon} ${d.id} ${d.name}`;
+                }
+            },
+            leaves: {
+                label: {
+                    position: 'right',
+                    verticalAlign: 'middle',
+                    fontSize: 13,
+                }
+            },
+            expandAndCollapse: true,
+            animationDuration: 400,
+            initialTreeDepth: 3,
+        }]
+    }, true);
+}
+
+function renderGraph(maxDepth) {
+    const nodes = graphData.nodes.filter(n => n.id.split('.').length <= maxDepth);
+    const ids = new Set(nodes.map(n => n.id));
+    const links = graphData.links.filter(l => ids.has(l.source) && ids.has(l.target));
+
+    chart.setOption({
+        tooltip: {
+            formatter: params => {
+                if (params.dataType === 'node') {
+                    const d = params.data;
+                    const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
+                    return `<strong>${d.id} ${d.name}</strong><br>状态: ${statusMap[d.meta?.status] || ''}`;
+                }
+                return '';
+            }
+        },
+        series: [{
+            type: 'graph',
+            layout: 'force',
+            data: nodes.map(n => ({
+                ...n,
+                label: {
+                    show: n.id.split('.').length <= 2,
+                    fontSize: 12,
+                    formatter: n.name,
+                }
+            })),
+            links: links,
+            roam: true,
+            draggable: true,
+            force: {
+                repulsion: 300,
+                edgeLength: 80,
+                gravity: 0.1,
+            },
+            lineStyle: { color: '#cbd5e1', curveness: 0.1 },
+            emphasis: {
+                focus: 'adjacency',
+                lineStyle: { width: 3 },
+            },
+            categories: graphData.categories,
+        }]
+    }, true);
+}
+
+function updateChart() { renderChart(); }
+
+function showPopup(data) {
+    const popup = document.getElementById('nodePopup');
+    const meta = data.meta || {};
+    const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
+    const relMap = {TAX:'分类',PROC:'工艺',SUPP:'供应'};
+
+    document.getElementById('popupTitle').textContent = `${data.id} ${data.name}`;
+    document.getElementById('popupBody').innerHTML = `
+        <div class="popup-row"><span>状态</span><span>${statusMap[meta.status] || meta.status}</span></div>
+        <div class="popup-row"><span>关系类型</span><span>${relMap[meta.relation] || meta.relation || '-'}</span></div>
+        <div class="popup-row"><span>上级</span><span>${meta.parent || '顶级节点'}</span></div>
+        <div class="popup-row"><span>子节点</span><span>${(meta.children || []).length} 个</span></div>
+    `;
+    document.getElementById('popupLink').href = `/node/${data.id}`;
+    popup.classList.remove('hidden');
+}
+
+function closePopup() {
+    document.getElementById('nodePopup').classList.add('hidden');
+}
+
+loadData();
+window.addEventListener('resize', () => chart && chart.resize());
+</script>
+{% endblock %}

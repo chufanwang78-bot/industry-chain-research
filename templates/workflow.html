@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}工作流 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>工作流指南</h1>
+</div>
+
+<div class="workflow-container">
+    <!-- 11步流程 -->
+    <div class="workflow-steps">
+        <h3>研究循环（11步）</h3>
+        <div class="steps-flow">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <strong>明确研究范围</strong>
+                    <p>确认本次会话要研究的产业链区域</p>
+                    <span class="badge badge-auto">自动</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <strong>建立/更新总图</strong>
+                    <p>确认一级、二级目录完整性</p>
+                    <span class="badge badge-auto">自动</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item step-human">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <strong>选择具体节点</strong>
+                    <p>从待研究列表中选择</p>
+                    <span class="badge badge-human">人工</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-text">
+                    <strong>技术原理研究</strong>
+                    <p>定义、功能、分类、技术路线</p>
+                    <span class="badge badge-auto">AI辅助</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">5</div>
+                <div class="step-text">
+                    <strong>材料/工艺/设备</strong>
+                    <p>按节点特征选择性展开</p>
+                    <span class="badge badge-auto">AI辅助</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">6</div>
+                <div class="step-text">
+                    <strong>企业检索核实</strong>
+                    <p>真实企业、产品、技术、地区</p>
+                    <span class="badge badge-auto">AI辅助</span>
+                </div>
+            </div>
+        </div>
+        <div class="steps-flow">
+            <div class="step-item">
+                <div class="step-num">7</div>
+                <div class="step-text">
+                    <strong>证据整理</strong>
+                    <p>标注等级、记录来源、标记待核实</p>
+                    <span class="badge badge-auto">AI辅助</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">8</div>
+                <div class="step-text">
+                    <strong>更新进度</strong>
+                    <p>更新节点状态、台账、日志</p>
+                    <span class="badge badge-auto">自动</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item step-human">
+                <div class="step-num">9</div>
+                <div class="step-text">
+                    <strong>判断拆解深度</strong>
+                    <p>是否继续向下拆解？</p>
+                    <span class="badge badge-human">人工</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item">
+                <div class="step-num">10</div>
+                <div class="step-text">
+                    <strong>需求+区域+切入点</strong>
+                    <p>技术难点、安徽资源、合作机会</p>
+                    <span class="badge badge-auto">AI辅助</span>
+                </div>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step-item step-human">
+                <div class="step-num">11</div>
+                <div class="step-text">
+                    <strong>覆盖度检查</strong>
+                    <p>补齐遗漏，形成阶段成果</p>
+                    <span class="badge badge-human">人工</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 质量规则 -->
+    <div class="quality-rules">
+        <h3>质量控制规则</h3>
+        <div class="rules-grid">
+            <div class="rule-card rule-forbidden">
+                <h4>🚫 禁止事项</h4>
+                <ul>
+                    <li>禁止编造企业名称、产品型号、技术参数</li>
+                    <li>禁止仅因技术相关就认定有合作需求</li>
+                    <li>禁止无来源标注为"已证实"</li>
+                    <li>禁止为填满模板制造无效内容</li>
+                </ul>
+            </div>
+            <div class="rule-card rule-control">
+                <h4>🎯 跑题控制</h4>
+                <ul>
+                    <li>是否完善产业链结构？</li>
+                    <li>是否帮助理解技术？</li>
+                    <li>是否有助于核实企业？</li>
+                    <li>是否识别产业需求？</li>
+                </ul>
+                <p>→ 是则记 TODO，否则记录不深入</p>
+            </div>
+            <div class="rule-card rule-depth">
+                <h4>📏 深度标准</h4>
+                <ul>
+                    <li>节点定义和功能清晰</li>
+                    <li>主要分类和技术路线覆盖</li>
+                    <li>3-5家代表企业已核实</li>
+                    <li>关键材料/工艺/设备识别</li>
+                    <li>技术难点和需求有判断</li>
+                    <li>安徽/长三角资源已调研</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 质量检查 -->
+    <div class="quality-check-section">
+        <h3>质量检查</h3>
+        <button class="btn btn-primary" onclick="runCheck()">运行质量检查</button>
+        <div id="checkResults" class="check-results"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function runCheck() {
+    const res = await fetch('/api/check');
+    const data = await res.json();
+    const div = document.getElementById('checkResults');
+
+    if (data.count === 0) {
+        div.innerHTML = '<div class="check-pass">✅ 质量检查通过，未发现问题</div>';
+        return;
+    }
+
+    div.innerHTML = `<div class="check-issues">
+        <p>发现 ${data.count} 个问题：</p>
+        ${data.issues.map(i => `<div class="check-item check-${i.level}">${i.msg}</div>`).join('')}
+    </div>`;
+}
+</script>
+{% endblock %}

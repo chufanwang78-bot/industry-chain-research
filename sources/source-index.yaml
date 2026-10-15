@@ -1,0 +1,30 @@
+# 资料来源台账
+# 由 ic_tools.py 或手动维护
+# 字段说明见 templates/source-template.md
+
+sources:
+  - id: S001
+    title: "沪硅产业官网 - 产品介绍"
+    type: "官网"
+    url: "https://www.sh-nsig.com"
+    publisher: "沪硅产业集团"
+    publish_date: ""
+    access_date: "2025-10-15"
+    related_nodes: ["05.01"]
+    evidence_level: "CONFIRMED"
+    summary: "沪硅产业产品线包括300mm抛光片、外延片、SOI硅片"
+    notes: "官方来源，但未包含具体产能数据"
+
+  - id: S002
+    title: "SEMI全球硅片市场数据"
+    type: "报告"
+    url: "(需查找完整报告链接)"
+    publisher: "SEMI"
+    publish_date: "2024"
+    access_date: "2025-10-15"
+    related_nodes: ["05.01"]
+    evidence_level: "UNVERIFIED"
+    summary: "全球硅片市场规模约120亿美元（数据待核实）"
+    notes: "需要找到可访问的报告原文或权威转载"
+
+next_id: 3

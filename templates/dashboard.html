@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>仪表盘</h1>
+    <div class="page-actions">
+        <span id="lastUpdate" class="text-muted"></span>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="stat-cards">
+    <div class="stat-card">
+        <div class="stat-number" id="statTotal">-</div>
+        <div class="stat-label">总节点数</div>
+    </div>
+    <div class="stat-card stat-done">
+        <div class="stat-number" id="statDone">-</div>
+        <div class="stat-label">已完成</div>
+    </div>
+    <div class="stat-card stat-wip">
+        <div class="stat-number" id="statWip">-</div>
+        <div class="stat-label">研究中</div>
+    </div>
+    <div class="stat-card stat-todo">
+        <div class="stat-number" id="statTodo">-</div>
+        <div class="stat-label">未开始</div>
+    </div>
+    <div class="stat-card stat-gap">
+        <div class="stat-number" id="statGap">-</div>
+        <div class="stat-label">待补充</div>
+    </div>
+</div>
+
+<!-- 图表区 -->
+<div class="chart-row">
+    <div class="chart-panel" style="flex: 1;">
+        <h3>各环节完成进度</h3>
+        <div id="categoryChart" style="height: 350px;"></div>
+    </div>
+    <div class="chart-panel" style="width: 350px;">
+        <h3>节点状态分布</h3>
+        <div id="statusPie" style="height: 350px;"></div>
+    </div>
+</div>
+
+<!-- 快速入口 -->
+<div class="quick-actions">
+    <h3>快速操作</h3>
+    <div class="action-cards">
+        <a href="/chain-map" class="action-card">
+            <div class="action-icon">🗺️</div>
+            <div class="action-text">查看产业链图谱</div>
+        </a>
+        <a href="/nodes" class="action-card">
+            <div class="action-icon">📋</div>
+            <div class="action-text">管理研究节点</div>
+        </a>
+        <a href="/workflow" class="action-card">
+            <div class="action-icon">⚙️</div>
+            <div class="action-text">工作流指南</div>
+        </a>
+        <a href="/sources" class="action-card">
+            <div class="action-icon">📚</div>
+            <div class="action-text">来源管理</div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadDashboard() {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+
+    if (data.error) return;
+
+    document.getElementById('statTotal').textContent = data.total;
+    document.getElementById('statDone').textContent = data.done;
+    document.getElementById('statWip').textContent = data.wip;
+    document.getElementById('statTodo').textContent = data.todo;
+    document.getElementById('statGap').textContent = data.gap;
+    document.getElementById('lastUpdate').textContent = '产业: ' + data.industry;
+
+    // 各环节进度柱状图
+    const catChart = echarts.init(document.getElementById('categoryChart'));
+    catChart.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: 100, right: 30, top: 20, bottom: 30 },
+        xAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
+        yAxis: {
+            type: 'category',
+            data: data.categories.map(c => c.name),
+            axisLabel: { fontSize: 13 }
+        },
+        series: [{
+            type: 'bar',
+            data: data.categories.map(c => c.percent),
+            barWidth: 24,
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: '#3b82f6' },
+                    { offset: 1, color: '#22c55e' }
+                ]),
+                borderRadius: [0, 4, 4, 0],
+            },
+            label: {
+                show: true,
+                position: 'right',
+                formatter: p => p.value + '%',
+                fontSize: 12,
+            }
+        }]
+    });
+
+    // 状态饼图
+    const pieChart = echarts.init(document.getElementById('statusPie'));
+    pieChart.setOption({
+        tooltip: { trigger: 'item' },
+        legend: { bottom: 0, icon: 'circle', itemWidth: 10 },
+        series: [{
+            type: 'pie',
+            radius: ['40%', '65%'],
+            center: ['50%', '45%'],
+            avoidLabelOverlap: true,
+            label: { show: true, formatter: '{b}: {c}' },
+            data: [
+                { value: data.done, name: '已完成', itemStyle: { color: '#22c55e' } },
+                { value: data.wip, name: '研究中', itemStyle: { color: '#3b82f6' } },
+                { value: data.todo, name: '未开始', itemStyle: { color: '#94a3b8' } },
+                { value: data.gap, name: '待补充', itemStyle: { color: '#eab308' } },
+                { value: data.hold, name: '暂缓', itemStyle: { color: '#a855f7' } },
+            ].filter(d => d.value > 0)
+        }]
+    });
+
+    window.addEventListener('resize', () => { catChart.resize(); pieChart.resize(); });
+}
+
+loadDashboard();
+</script>
+{% endblock %}

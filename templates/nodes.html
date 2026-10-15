@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}节点管理 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>节点管理</h1>
+    <div class="page-actions">
+        <select id="statusFilter" onchange="filterNodes()">
+            <option value="">全部状态</option>
+            <option value="TODO">⬜ 未开始</option>
+            <option value="WIP">🔵 研究中</option>
+            <option value="DONE">✅ 已完成</option>
+            <option value="GAP">⚠️ 待补充</option>
+            <option value="HOLD">⏸️ 暂缓</option>
+        </select>
+        <input type="text" id="nodeSearch" placeholder="搜索节点..." oninput="filterNodes()">
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table" id="nodesTable">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>名称</th>
+                <th>关系类型</th>
+                <th>状态</th>
+                <th>优先级</th>
+                <th>父节点</th>
+                <th>更新日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="nodesBody">
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allNodes = [];
+
+async function loadNodes() {
+    const res = await fetch('/api/tree');
+    const data = await res.json();
+    allNodes = Object.entries(data.nodes).map(([id, n]) => ({ id, ...n }));
+    renderNodes(allNodes);
+}
+
+function renderNodes(nodes) {
+    const relMap = { TAX: '分类', PROC: '工艺', SUPP: '供应' };
+    const statusMap = {
+        DONE: '<span class="badge badge-done">✅ 已完成</span>',
+        WIP: '<span class="badge badge-wip">🔵 研究中</span>',
+        TODO: '<span class="badge badge-todo">⬜ 未开始</span>',
+        GAP: '<span class="badge badge-gap">⚠️ 待补充</span>',
+        HOLD: '<span class="badge badge-hold">⏸️ 暂缓</span>',
+    };
+    const prioMap = {
+        high: '<span class="badge badge-high">高</span>',
+        medium: '<span class="badge badge-medium">中</span>',
+        low: '<span class="badge badge-low">低</span>',
+    };
+
+    document.getElementById('nodesBody').innerHTML = nodes.map(n => `
+        <tr>
+            <td class="mono">${n.id}</td>
+            <td>${n.name}</td>
+            <td>${relMap[n.relation_type] || '-'}</td>
+            <td>${statusMap[n.status] || n.status}</td>
+            <td>${prioMap[n.priority] || '-'}</td>
+            <td>${n.parent || '-'}</td>
+            <td>${n.last_updated || '-'}</td>
+            <td><a href="/node/${n.id}" class="btn-sm">查看</a></td>
+        </tr>
+    `).join('');
+}
+
+function filterNodes() {
+    const status = document.getElementById('statusFilter').value;
+    const q = document.getElementById('nodeSearch').value.toLowerCase();
+
+    let filtered = allNodes;
+    if (status) filtered = filtered.filter(n => n.status === status);
+    if (q) filtered = filtered.filter(n =>
+        n.id.toLowerCase().includes(q) || n.name.toLowerCase().includes(q)
+    );
+    renderNodes(filtered);
+}
+
+loadNodes();
+</script>
+{% endblock %}

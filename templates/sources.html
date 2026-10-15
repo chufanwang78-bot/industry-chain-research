@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}来源管理 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>来源管理</h1>
+    <div class="page-actions">
+        <input type="text" id="sourceSearch" placeholder="搜索来源..." oninput="filterSources()">
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table" id="sourcesTable">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>标题</th>
+                <th>类型</th>
+                <th>发布机构</th>
+                <th>关联节点</th>
+                <th>证据等级</th>
+                <th>摘要</th>
+            </tr>
+        </thead>
+        <tbody id="sourcesBody">
+        </tbody>
+    </table>
+</div>
+
+<div class="evidence-legend">
+    <h4>证据等级说明</h4>
+    <div class="legend-items">
+        <span class="badge badge-done">CONFIRMED</span> 来源可访问、内容明确、来源可靠
+    </div>
+    <div class="legend-items">
+        <span class="badge badge-wip">INFERRED</span> 基于已证实信息的逻辑推断
+    </div>
+    <div class="legend-items">
+        <span class="badge badge-gap">UNVERIFIED</span> 信息可能正确但来源不够权威
+    </div>
+    <div class="legend-items">
+        <span class="badge badge-todo">DOUBTFUL</span> 来源可靠性存疑，仅供参考
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allSources = [];
+
+async function loadSources() {
+    const res = await fetch('/api/sources');
+    const data = await res.json();
+    allSources = data.sources || [];
+    renderSources(allSources);
+}
+
+function renderSources(sources) {
+    const levelMap = {
+        CONFIRMED: '<span class="badge badge-done">CONFIRMED</span>',
+        INFERRED: '<span class="badge badge-wip">INFERRED</span>',
+        UNVERIFIED: '<span class="badge badge-gap">UNVERIFIED</span>',
+        DOUBTFUL: '<span class="badge badge-todo">DOUBTFUL</span>',
+    };
+
+    document.getElementById('sourcesBody').innerHTML = sources.map(s => `
+        <tr>
+            <td class="mono">${s.id}</td>
+            <td><a href="${s.url}" target="_blank" title="${s.url}">${s.title}</a></td>
+            <td>${s.type || '-'}</td>
+            <td>${s.publisher || '-'}</td>
+            <td>${(s.related_nodes || []).join(', ') || '-'}</td>
+            <td>${levelMap[s.evidence_level] || s.evidence_level}</td>
+            <td class="text-small">${s.summary || '-'}</td>
+        </tr>
+    `).join('') || '<tr><td colspan="7" class="text-muted">暂无来源记录</td></tr>';
+}
+
+function filterSources() {
+    const q = document.getElementById('sourceSearch').value.toLowerCase();
+    if (!q) { renderSources(allSources); return; }
+    renderSources(allSources.filter(s =>
+        (s.title || '').toLowerCase().includes(q) ||
+        (s.publisher || '').toLowerCase().includes(q) ||
+        (s.summary || '').toLowerCase().includes(q)
+    ));
+}
+
+loadSources();
+</script>
+{% endblock %}

@@ -1,0 +1,200 @@
+# 产业链研究工作流配置
+# 修改此文件可调整工作流行为
+
+research:
+  organization: "安徽长三角产业创新研究院"
+  department: "材料事业部"
+  researcher: "王楚帆"
+  current_industry: "芯片"
+  start_date: "2025-10-15"
+
+# 当前研究的产业链定义
+industries:
+  芯片:
+    code: "IC"
+    # 一级目录（产业链主要环节）
+    top_categories:
+      - id: "01"
+        name: "芯片产品"
+        relation_type: "TAX"
+        description: "芯片产品分类体系，按功能用途划分"
+        subcategories:
+          - id: "01.01"
+            name: "数字芯片"
+            subcategories:
+              - id: "01.01.01"
+                name: "处理器芯片(CPU/GPU)"
+              - id: "01.01.02"
+                name: "存储芯片(DRAM/NAND/NOR)"
+              - id: "01.01.03"
+                name: "逻辑芯片(FPGA/ASIC)"
+              - id: "01.01.04"
+                name: "SoC芯片"
+          - id: "01.02"
+            name: "模拟芯片"
+            subcategories:
+              - id: "01.02.01"
+                name: "电源管理芯片"
+              - id: "01.02.02"
+                name: "信号链芯片(ADC/DAC/运放)"
+              - id: "01.02.03"
+                name: "射频芯片"
+          - id: "01.03"
+            name: "分立器件"
+            subcategories:
+              - id: "01.03.01"
+                name: "功率器件(IGBT/MOSFET/SiC/GaN)"
+              - id: "01.03.02"
+                name: "二极管/三极管"
+          - id: "01.04"
+            name: "传感器芯片"
+            subcategories:
+              - id: "01.04.01"
+                name: "CMOS图像传感器(CIS)"
+              - id: "01.04.02"
+                name: "MEMS传感器"
+          - id: "01.05"
+            name: "光电子芯片"
+            subcategories:
+              - id: "01.05.01"
+                name: "LED芯片"
+              - id: "01.05.02"
+                name: "激光器芯片"
+              - id: "01.05.03"
+                name: "光通信芯片"
+      - id: "02"
+        name: "芯片设计"
+        relation_type: "PROC"
+        description: "芯片设计环节，从架构定义到GDSII"
+        subcategories:
+          - id: "02.01"
+            name: "架构定义"
+          - id: "02.02"
+            name: "前端设计(RTL/逻辑综合)"
+          - id: "02.03"
+            name: "后端设计(布局布线)"
+          - id: "02.04"
+            name: "设计验证"
+          - id: "02.05"
+            name: "可测性设计(DFT)"
+      - id: "03"
+        name: "晶圆制造"
+        relation_type: "PROC"
+        description: "晶圆制造（前道工艺），从硅片到成品晶圆"
+        subcategories:
+          - id: "03.01"
+            name: "氧化/扩散"
+          - id: "03.02"
+            name: "光刻"
+          - id: "03.03"
+            name: "刻蚀"
+          - id: "03.04"
+            name: "薄膜沉积(CVD/PVD/ALD)"
+          - id: "03.05"
+            name: "离子注入"
+          - id: "03.06"
+            name: "化学机械抛光(CMP)"
+          - id: "03.07"
+            name: "清洗"
+          - id: "03.08"
+            name: "检测与量测"
+      - id: "04"
+        name: "封装测试"
+        relation_type: "PROC"
+        description: "封装和测试环节（后道工艺）"
+        subcategories:
+          - id: "04.01"
+            name: "传统封装(DIP/SOP/QFP/BGA)"
+          - id: "04.02"
+            name: "先进封装(WLP/2.5D/3D/Chiplet)"
+          - id: "04.03"
+            name: "晶圆测试(CP)"
+          - id: "04.04"
+            name: "成品测试(FT)"
+      - id: "05"
+        name: "半导体材料"
+        relation_type: "SUPP"
+        description: "芯片制造所需各类材料"
+        subcategories:
+          - id: "05.01"
+            name: "硅片/衬底"
+          - id: "05.02"
+            name: "光刻胶及配套材料"
+          - id: "05.03"
+            name: "电子特气"
+          - id: "05.04"
+            name: "湿电子化学品"
+          - id: "05.05"
+            name: "靶材/蒸发料"
+          - id: "05.06"
+            name: "CMP抛光材料"
+          - id: "05.07"
+            name: "封装基板/引线框架"
+          - id: "05.08"
+            name: "第三代半导体衬底(SiC/GaN)"
+      - id: "06"
+        name: "半导体设备"
+        relation_type: "SUPP"
+        description: "芯片制造所需各类设备"
+        subcategories:
+          - id: "06.01"
+            name: "光刻机"
+          - id: "06.02"
+            name: "刻蚀设备"
+          - id: "06.03"
+            name: "薄膜沉积设备"
+          - id: "06.04"
+            name: "离子注入设备"
+          - id: "06.05"
+            name: "CMP设备"
+          - id: "06.06"
+            name: "清洗设备"
+          - id: "06.07"
+            name: "检测/量测设备"
+          - id: "06.08"
+            name: "封装设备"
+          - id: "06.09"
+            name: "测试设备"
+      - id: "07"
+        name: "EDA与IP"
+        relation_type: "SUPP"
+        description: "芯片设计所需的EDA工具和IP核"
+        subcategories:
+          - id: "07.01"
+            name: "EDA工具"
+          - id: "07.02"
+            name: "IP核授权"
+      - id: "08"
+        name: "支撑体系"
+        relation_type: "TAX"
+        description: "产业服务平台、科研院所、行业协会等"
+        subcategories:
+          - id: "08.01"
+            name: "产业平台/园区"
+          - id: "08.02"
+            name: "科研院所/高校"
+          - id: "08.03"
+            name: "行业协会/联盟"
+          - id: "08.04"
+            name: "检测认证机构"
+
+# 研究深度参数
+depth_control:
+  min_enterprises_per_node: 3      # 每个节点最少核实企业数
+  max_enterprises_per_node: 10     # 每个节点最多核实企业数（避免过度研究）
+  min_sources_per_node: 3          # 每个节点最少来源数
+  require_region_scan: true        # 是否必须调研安徽/长三角资源
+  require_opportunity_analysis: true  # 是否必须分析产研院切入点
+
+# 质量控制
+quality_control:
+  forbid_fabrication: true         # 禁止编造
+  require_source_for_claims: true  # 关键事实必须有来源
+  flag_inference: true             # 推断必须标注
+  check_relevance: true            # 每步检查是否跑题
+
+# 输出配置
+output:
+  report_format: "markdown"
+  chart_format: "html"
+  language: "zh-CN"
