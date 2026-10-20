@@ -9,6 +9,14 @@
             <button class="btn-toggle active" onclick="setView('tree')">树形图</button>
             <button class="btn-toggle" onclick="setView('graph')">关系图</button>
         </div>
+        <select id="perspectiveFilter" onchange="updateChart()">
+            <option value="">全部视角</option>
+            <option value="01">📌 产品视角</option>
+            <option value="10">⚙️ 制造过程视角</option>
+            <option value="20">🧪 材料视角</option>
+            <option value="30">🔧 设备视角</option>
+            <option value="90">⭐ 机会汇总</option>
+        </select>
         <select id="depthFilter" onchange="updateChart()">
             <option value="99">全部层级</option>
             <option value="1">仅一级</option>
@@ -41,9 +49,28 @@ let chart;
 let currentView = 'tree';
 let graphData = null;
 
+const perspectiveColors = {
+    '01': '#3b82f6',  // 产品-蓝
+    '10': '#8b5cf6',  // 过程-紫
+    '20': '#22c55e',  // 材料-绿
+    '30': '#f59e0b',  // 设备-橙
+    '90': '#ef4444',  // 机会-红
+};
+
+function getPerspective(id) {
+    return id.split('.')[0].substring(0, 2);
+}
+
 async function loadData() {
-    const res = await fetch('/api/graph');
+    const res = await fetch(`/api/${PROJECT}/graph`);
     graphData = await res.json();
+    // 给节点加上视角颜色
+    graphData.nodes.forEach(n => {
+        const p = getPerspective(n.id);
+        if (perspectiveColors[p]) {
+            n.itemStyle = { color: perspectiveColors[p], borderColor: '#fff', borderWidth: 1 };
+        }
+    });
     renderChart();
 }
 
@@ -54,30 +81,56 @@ function setView(view) {
     renderChart();
 }
 
+function getFilteredNodes() {
+    const perspective = document.getElementById('perspectiveFilter').value;
+    const maxDepth = parseInt(document.getElementById('depthFilter').value);
+
+    return graphData.nodes.filter(n => {
+        const depth = n.id.split('.').length;
+        if (depth > maxDepth) return false;
+        if (perspective && getPerspective(n.id) !== perspective) return false;
+        return true;
+    });
+}
+
 function renderChart() {
     if (!graphData) return;
-    const maxDepth = parseInt(document.getElementById('depthFilter').value);
+    const filteredNodes = getFilteredNodes();
+    const ids = new Set(filteredNodes.map(n => n.id));
+
+    // 节点多时固定高度会让标签重叠 —— 树形图按叶子数撑高画布，页面滚动查看
+    const el = document.getElementById('chainChart');
+    if (currentView === 'tree') {
+        const leafCount = filteredNodes.filter(n =>
+            !filteredNodes.some(c => c.meta.parent === n.id)
+        ).length;
+        const needed = leafCount * 42 + 160;
+        el.style.height = Math.max(window.innerHeight - 160, needed) + 'px';
+    } else {
+        el.style.height = (window.innerHeight - 160) + 'px';
+    }
 
     if (!chart) {
         chart = echarts.init(document.getElementById('chainChart'));
         chart.on('click', params => {
-            if (params.data && params.data.id) {
+            if (params.data && params.data.id && !params.data.meta?.isSynthetic) {
                 showPopup(params.data);
             }
         });
+    } else {
+        chart.resize();
     }
 
     if (currentView === 'tree') {
-        renderTree(maxDepth);
+        renderTree(filteredNodes, ids);
     } else {
-        renderGraph(maxDepth);
+        renderGraph(filteredNodes, ids);
     }
 }
 
-function renderTree(maxDepth) {
-    // 构建树形数据
+function renderTree(filteredNodes, ids) {
     const nodeMap = {};
-    graphData.nodes.forEach(n => {
+    filteredNodes.forEach(n => {
         nodeMap[n.id] = {
             name: n.name,
             id: n.id,
@@ -88,21 +141,37 @@ function renderTree(maxDepth) {
     });
 
     const roots = [];
-    graphData.nodes.forEach(n => {
+    filteredNodes.forEach(n => {
         const parentId = n.meta.parent;
-        if (parentId && nodeMap[parentId] && n.id.split('.').length <= maxDepth) {
+        if (parentId && nodeMap[parentId]) {
             nodeMap[parentId].children.push(nodeMap[n.id]);
-        } else if (!parentId && n.id.split('.').length <= maxDepth) {
+        } else if (!parentId) {
             roots.push(nodeMap[n.id]);
         }
     });
+
+    let treeData = roots;
+    if (roots.length > 0) {
+        // ECharts 树形图只渲染 data 数组里的第一个根节点，
+        // 多根节点（如 LCD + OLED）必须包在一个合成根下才能全部显示
+        treeData = [{
+            name: PROJECT,
+            id: '__root__',
+            meta: {
+                status: '', relation: '', parent: '', isSynthetic: true,
+                children: roots.map(r => r.id)
+            },
+            itemStyle: { color: '#1e293b', borderColor: '#fff', borderWidth: 2 },
+            children: roots
+        }];
+    }
 
     chart.setOption({
         tooltip: {
             trigger: 'item',
             formatter: params => {
                 const d = params.data;
-                if (!d.meta) return d.name;
+                if (!d.meta || d.meta.isSynthetic) return d.name;
                 const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
                 return `<strong>${d.id} ${d.name}</strong><br>
                     状态: ${statusMap[d.meta.status] || d.meta.status}<br>
@@ -111,20 +180,21 @@ function renderTree(maxDepth) {
         },
         series: [{
             type: 'tree',
-            data: roots,
+            data: treeData,
             orient: 'LR',
             top: '5%',
             bottom: '5%',
-            left: '15%',
-            right: '25%',
+            left: '12%',
+            right: '30%',
             symbolSize: 10,
-            lineStyle: { color: '#94a3b8', width: 1.5 },
+            lineStyle: { color: '#cbd5e1', width: 1.5 },
             label: {
                 position: 'left',
                 verticalAlign: 'middle',
                 fontSize: 13,
                 formatter: params => {
                     const d = params.data;
+                    if (d.meta && d.meta.isSynthetic) return `🏭 ${d.name}`;
                     const statusIcon = {DONE:'✅',WIP:'🔵',TODO:'⬜',GAP:'⚠️',HOLD:'⏸️'}[d.meta?.status] || '';
                     return `${statusIcon} ${d.id} ${d.name}`;
                 }
@@ -137,15 +207,14 @@ function renderTree(maxDepth) {
                 }
             },
             expandAndCollapse: true,
-            animationDuration: 400,
-            initialTreeDepth: 3,
+            animationDuration: 0,
+            animationDurationUpdate: 0,
+            initialTreeDepth: 4,
         }]
     }, true);
 }
 
-function renderGraph(maxDepth) {
-    const nodes = graphData.nodes.filter(n => n.id.split('.').length <= maxDepth);
-    const ids = new Set(nodes.map(n => n.id));
+function renderGraph(filteredNodes, ids) {
     const links = graphData.links.filter(l => ids.has(l.source) && ids.has(l.target));
 
     chart.setOption({
@@ -159,11 +228,19 @@ function renderGraph(maxDepth) {
                 return '';
             }
         },
+        legend: {
+            data: ['产品视角', '制造过程视角', '材料视角', '设备视角', '机会汇总'],
+            bottom: 10,
+        },
         series: [{
             type: 'graph',
             layout: 'force',
-            data: nodes.map(n => ({
+            data: filteredNodes.map(n => ({
                 ...n,
+                category: getPerspective(n.id) === '01' ? 0 :
+                          getPerspective(n.id) === '10' ? 1 :
+                          getPerspective(n.id) === '20' ? 2 :
+                          getPerspective(n.id) === '30' ? 3 : 4,
                 label: {
                     show: n.id.split('.').length <= 2,
                     fontSize: 12,
@@ -183,7 +260,10 @@ function renderGraph(maxDepth) {
                 focus: 'adjacency',
                 lineStyle: { width: 3 },
             },
-            categories: graphData.categories,
+            categories: [
+                {name: '产品视角'}, {name: '制造过程视角'}, {name: '材料视角'},
+                {name: '设备视角'}, {name: '机会汇总'}
+            ],
         }]
     }, true);
 }
@@ -195,15 +275,17 @@ function showPopup(data) {
     const meta = data.meta || {};
     const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
     const relMap = {TAX:'分类',PROC:'工艺',SUPP:'供应'};
+    const perspMap = {'01':'产品视角','10':'制造过程','20':'材料视角','30':'设备视角','90':'机会汇总'};
 
     document.getElementById('popupTitle').textContent = `${data.id} ${data.name}`;
     document.getElementById('popupBody').innerHTML = `
+        <div class="popup-row"><span>所属视角</span><span>${perspMap[getPerspective(data.id)] || '-'}</span></div>
         <div class="popup-row"><span>状态</span><span>${statusMap[meta.status] || meta.status}</span></div>
         <div class="popup-row"><span>关系类型</span><span>${relMap[meta.relation] || meta.relation || '-'}</span></div>
         <div class="popup-row"><span>上级</span><span>${meta.parent || '顶级节点'}</span></div>
         <div class="popup-row"><span>子节点</span><span>${(meta.children || []).length} 个</span></div>
     `;
-    document.getElementById('popupLink').href = `/node/${data.id}`;
+    document.getElementById('popupLink').href = `/${PROJECT}/node/${data.id}`;
     popup.classList.remove('hidden');
 }
 
@@ -212,6 +294,10 @@ function closePopup() {
 }
 
 loadData();
-window.addEventListener('resize', () => chart && chart.resize());
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => chart && chart.resize(), 200);
+});
 </script>
 {% endblock %}

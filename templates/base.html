@@ -11,24 +11,25 @@
     <!-- 侧边栏 -->
     <nav class="sidebar">
         <div class="sidebar-header">
+            <a href="/" class="back-link">← 返回项目列表</a>
             <div class="logo">
                 <span class="logo-icon">⬡</span>
                 <div>
-                    <div class="logo-title">产业链研究工作台</div>
-                    <div class="logo-sub">安徽产研院 · 材料事业部</div>
+                    <div class="logo-title">{{ project or "产业链研究" }}</div>
+                    <div class="logo-sub">产业研究工作台</div>
                 </div>
             </div>
         </div>
         <ul class="nav-menu">
-            <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+            <li><a href="/{{ project }}/" class="nav-link {% if request.path == '/' + project + '/' %}active{% endif %}">
                 <span class="nav-icon">📊</span> 仪表盘</a></li>
-            <li><a href="/chain-map" class="nav-link {% if request.path == '/chain-map' %}active{% endif %}">
+            <li><a href="/{{ project }}/chain-map" class="nav-link {% if request.path == '/' + project + '/chain-map' %}active{% endif %}">
                 <span class="nav-icon">🗺️</span> 产业链图谱</a></li>
-            <li><a href="/nodes" class="nav-link {% if request.path == '/nodes' %}active{% endif %}">
+            <li><a href="/{{ project }}/nodes" class="nav-link {% if request.path == '/' + project + '/nodes' %}active{% endif %}">
                 <span class="nav-icon">📋</span> 节点管理</a></li>
-            <li><a href="/sources" class="nav-link {% if request.path == '/sources' %}active{% endif %}">
+            <li><a href="/{{ project }}/sources" class="nav-link {% if request.path == '/' + project + '/sources' %}active{% endif %}">
                 <span class="nav-icon">📚</span> 来源管理</a></li>
-            <li><a href="/workflow" class="nav-link {% if request.path == '/workflow' %}active{% endif %}">
+            <li><a href="/{{ project }}/workflow" class="nav-link {% if request.path == '/' + project + '/workflow' %}active{% endif %}">
                 <span class="nav-icon">⚙️</span> 工作流</a></li>
         </ul>
         <div class="sidebar-footer">
@@ -44,6 +45,10 @@
         {% block content %}{% endblock %}
     </main>
 
+    <script>
+    // 项目上下文
+    const PROJECT = '{{ project }}';
+    </script>
     <script src="/static/js/main.js"></script>
     {% block scripts %}{% endblock %}
 </body>

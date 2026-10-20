@@ -42,7 +42,7 @@
 let allNodes = [];
 
 async function loadNodes() {
-    const res = await fetch('/api/tree');
+    const res = await fetch(`/api/${PROJECT}/tree`);
     const data = await res.json();
     allNodes = Object.entries(data.nodes).map(([id, n]) => ({ id, ...n }));
     renderNodes(allNodes);
@@ -72,7 +72,7 @@ function renderNodes(nodes) {
             <td>${prioMap[n.priority] || '-'}</td>
             <td>${n.parent || '-'}</td>
             <td>${n.last_updated || '-'}</td>
-            <td><a href="/node/${n.id}" class="btn-sm">查看</a></td>
+            <td><a href="/${PROJECT}/node/${n.id}" class="btn-sm">查看</a></td>
         </tr>
     `).join('');
 }

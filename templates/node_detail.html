@@ -69,7 +69,7 @@ const nodeId = '{{ node_id }}';
 let nodeData = null;
 
 async function loadNode() {
-    const res = await fetch(`/api/node/${nodeId}`);
+    const res = await fetch(`/api/${PROJECT}/node/${nodeId}`);
     if (!res.ok) {
         document.getElementById('nodeTitle').textContent = `节点 ${nodeId} 不存在`;
         return;
@@ -121,7 +121,7 @@ async function updateNodePriority() {
 async function saveContent() {
     const content = document.getElementById('editor').value;
     document.getElementById('saveStatus').textContent = '保存中...';
-    const res = await fetch(`/api/node/${nodeId}/file`, {
+    const res = await fetch(`/api/${PROJECT}/node/${nodeId}/file`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })

@@ -162,7 +162,7 @@
 {% block scripts %}
 <script>
 async function runCheck() {
-    const res = await fetch('/api/check');
+    const res = await fetch(`/api/${PROJECT}/check`);
     const data = await res.json();
     const div = document.getElementById('checkResults');
 

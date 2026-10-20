@@ -15,12 +15,12 @@ if (searchInput) {
             return;
         }
         searchTimeout = setTimeout(async () => {
-            const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+            const res = await fetch(`/api/${encodeURIComponent(PROJECT)}/search?q=${encodeURIComponent(q)}`);
             const data = await res.json();
             if (data.results.length > 0) {
                 searchResults.innerHTML = data.results.map(r => {
                     const statusIcon = {DONE:'✅',WIP:'🔵',TODO:'⬜',GAP:'⚠️',HOLD:'⏸️'}[r.status] || '';
-                    return `<a href="/node/${r.id}">${statusIcon} ${r.id} ${r.name}</a>`;
+                    return `<a href="/${encodeURIComponent(PROJECT)}/node/${r.id}">${statusIcon} ${r.id} ${r.name}</a>`;
                 }).join('');
                 searchResults.classList.add('has-items');
             } else {
@@ -30,34 +30,16 @@ if (searchInput) {
         }, 300);
     });
 
-    // 点击外部关闭搜索结果
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.search-box')) {
             searchResults.classList.remove('has-items');
         }
     });
 
-    // 回车跳转第一个结果
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const first = searchResults.querySelector('a[href]');
             if (first) first.click();
         }
     });
-}
-
-// 全局工具函数
-function formatDate(d) {
-    return d ? d : '-';
-}
-
-function statusBadge(status) {
-    const map = {
-        DONE: '<span class="badge badge-done">✅ 已完成</span>',
-        WIP: '<span class="badge badge-wip">🔵 研究中</span>',
-        TODO: '<span class="badge badge-todo">⬜ 未开始</span>',
-        GAP: '<span class="badge badge-gap">⚠️ 待补充</span>',
-        HOLD: '<span class="badge badge-hold">⏸️ 暂缓</span>',
-    };
-    return map[status] || status;
 }

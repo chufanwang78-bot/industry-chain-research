@@ -1,0 +1,26 @@
+# 产业研究项目索引
+# 管理所有产业研究项目
+
+projects:
+  - id: "芯片"
+    name: "存储芯片产业链"
+    code: "IC"
+    status: "进行中"
+    description: "聚焦存储芯片(DRAM/NAND/NOR/新型存储器)：产品/制造过程/材料/设备四视角+机会汇总"
+    start_date: "2025-10-15"
+    total_nodes: 45
+    done_nodes: 0
+    icon: "🔬"
+
+  - id: "屏幕"
+    name: "屏幕/显示产业链"
+    code: "DISPLAY"
+    status: "已完成"
+    description: "LCD/OLED 显示产业链拆解（参考项目）"
+    start_date: "2025-09-01"
+    total_nodes: 0
+    done_nodes: 0
+    icon: "🖥️"
+
+# 当前活跃项目
+current_project: "芯片"

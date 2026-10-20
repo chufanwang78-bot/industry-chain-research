@@ -1,5 +1,6 @@
 # 产业链研究工作流配置
-# 修改此文件可调整工作流行为
+# 版本: v2.0 — 四视角交叉结构
+# 核心理念: 产品/过程/材料/设备四个视角 → 企业 → 区域筛选 → 新闻 → 产研院机会
 
 research:
   organization: "安徽长三角产业创新研究院"
@@ -7,191 +8,230 @@ research:
   researcher: "王楚帆"
   current_industry: "芯片"
   start_date: "2025-10-15"
+  methodology: "产品拆解驱动 + 工艺流程驱动 + 材料设备追溯 → 企业匹配 → 区域聚焦 → 新闻追踪"
 
-# 当前研究的产业链定义
 industries:
   芯片:
     code: "IC"
-    # 一级目录（产业链主要环节）
     top_categories:
+
+      # ===================== 产品视角 =====================
       - id: "01"
-        name: "芯片产品"
+        name: "产品视角"
         relation_type: "TAX"
-        description: "芯片产品分类体系，按功能用途划分"
+        description: "芯片产品分类，各品类的特点、制程、应用场景、代表企业"
         subcategories:
           - id: "01.01"
             name: "数字芯片"
             subcategories:
               - id: "01.01.01"
-                name: "处理器芯片(CPU/GPU)"
+                name: "处理器(CPU/GPU/AP)"
               - id: "01.01.02"
-                name: "存储芯片(DRAM/NAND/NOR)"
-              - id: "01.01.03"
                 name: "逻辑芯片(FPGA/ASIC)"
-              - id: "01.01.04"
+              - id: "01.01.03"
                 name: "SoC芯片"
           - id: "01.02"
-            name: "模拟芯片"
+            name: "存储芯片"
             subcategories:
               - id: "01.02.01"
-                name: "电源管理芯片"
+                name: "DRAM"
               - id: "01.02.02"
-                name: "信号链芯片(ADC/DAC/运放)"
+                name: "NAND Flash"
               - id: "01.02.03"
-                name: "射频芯片"
+                name: "NOR Flash"
           - id: "01.03"
-            name: "分立器件"
+            name: "模拟芯片"
             subcategories:
               - id: "01.03.01"
-                name: "功率器件(IGBT/MOSFET/SiC/GaN)"
+                name: "电源管理芯片"
               - id: "01.03.02"
-                name: "二极管/三极管"
+                name: "信号链芯片(ADC/DAC/运放)"
+              - id: "01.03.03"
+                name: "射频芯片"
           - id: "01.04"
-            name: "传感器芯片"
+            name: "功率器件"
             subcategories:
               - id: "01.04.01"
-                name: "CMOS图像传感器(CIS)"
+                name: "硅基功率器件(IGBT/MOSFET)"
               - id: "01.04.02"
-                name: "MEMS传感器"
+                name: "碳化硅(SiC)器件"
+              - id: "01.04.03"
+                name: "氮化镓(GaN)器件"
           - id: "01.05"
-            name: "光电子芯片"
+            name: "传感器芯片"
             subcategories:
               - id: "01.05.01"
-                name: "LED芯片"
+                name: "CMOS图像传感器(CIS)"
               - id: "01.05.02"
-                name: "激光器芯片"
-              - id: "01.05.03"
-                name: "光通信芯片"
-      - id: "02"
-        name: "芯片设计"
+                name: "MEMS传感器"
+          - id: "01.06"
+            name: "光电子芯片"
+            subcategories:
+              - id: "01.06.01"
+                name: "LED芯片"
+              - id: "01.06.02"
+                name: "激光器/光通信芯片"
+
+      # ===================== 制造过程视角 =====================
+      - id: "10"
+        name: "制造过程视角"
         relation_type: "PROC"
-        description: "芯片设计环节，从架构定义到GDSII"
+        description: "芯片制造的完整流程，每道工序的工艺原理、用料、产出、设备"
         subcategories:
-          - id: "02.01"
-            name: "架构定义"
-          - id: "02.02"
-            name: "前端设计(RTL/逻辑综合)"
-          - id: "02.03"
-            name: "后端设计(布局布线)"
-          - id: "02.04"
-            name: "设计验证"
-          - id: "02.05"
-            name: "可测性设计(DFT)"
-      - id: "03"
-        name: "晶圆制造"
-        relation_type: "PROC"
-        description: "晶圆制造（前道工艺），从硅片到成品晶圆"
-        subcategories:
-          - id: "03.01"
-            name: "氧化/扩散"
-          - id: "03.02"
+          - id: "10.01"
+            name: "拉晶(单晶硅锭生长)"
+            subcategories:
+              - id: "10.01.01"
+                name: "直拉法(CZ)"
+              - id: "10.01.02"
+                name: "区熔法(FZ)"
+          - id: "10.02"
+            name: "切片与研磨"
+          - id: "10.03"
+            name: "抛光(CMP)"
+          - id: "10.04"
             name: "光刻"
-          - id: "03.03"
+            subcategories:
+              - id: "10.04.01"
+                name: "涂胶/前烘"
+              - id: "10.04.02"
+                name: "曝光"
+              - id: "10.04.03"
+                name: "显影/后烘"
+          - id: "10.05"
             name: "刻蚀"
-          - id: "03.04"
-            name: "薄膜沉积(CVD/PVD/ALD)"
-          - id: "03.05"
+            subcategories:
+              - id: "10.05.01"
+                name: "干法刻蚀"
+              - id: "10.05.02"
+                name: "湿法刻蚀"
+          - id: "10.06"
+            name: "薄膜沉积"
+            subcategories:
+              - id: "10.06.01"
+                name: "CVD(化学气相沉积)"
+              - id: "10.06.02"
+                name: "PVD(物理气相沉积)"
+              - id: "10.06.03"
+                name: "ALD(原子层沉积)"
+          - id: "10.07"
             name: "离子注入"
-          - id: "03.06"
-            name: "化学机械抛光(CMP)"
-          - id: "03.07"
+          - id: "10.08"
             name: "清洗"
-          - id: "03.08"
+          - id: "10.09"
             name: "检测与量测"
-      - id: "04"
-        name: "封装测试"
-        relation_type: "PROC"
-        description: "封装和测试环节（后道工艺）"
-        subcategories:
-          - id: "04.01"
-            name: "传统封装(DIP/SOP/QFP/BGA)"
-          - id: "04.02"
-            name: "先进封装(WLP/2.5D/3D/Chiplet)"
-          - id: "04.03"
-            name: "晶圆测试(CP)"
-          - id: "04.04"
-            name: "成品测试(FT)"
-      - id: "05"
-        name: "半导体材料"
+          - id: "10.10"
+            name: "封装"
+            subcategories:
+              - id: "10.10.01"
+                name: "传统封装(DIP/SOP/QFP/BGA)"
+              - id: "10.10.02"
+                name: "先进封装(WLP/2.5D/3D/Chiplet)"
+          - id: "10.11"
+            name: "测试"
+            subcategories:
+              - id: "10.11.01"
+                name: "晶圆测试(CP)"
+              - id: "10.11.02"
+                name: "成品测试(FT)"
+
+      # ===================== 材料视角 =====================
+      - id: "20"
+        name: "材料视角"
         relation_type: "SUPP"
-        description: "芯片制造所需各类材料"
+        description: "芯片制造所需各类材料的性能、供应商、国产化、安徽资源"
         subcategories:
-          - id: "05.01"
+          - id: "20.01"
             name: "硅片/衬底"
-          - id: "05.02"
+          - id: "20.02"
             name: "光刻胶及配套材料"
-          - id: "05.03"
+            subcategories:
+              - id: "20.02.01"
+                name: "g/i线光刻胶"
+              - id: "20.02.02"
+                name: "KrF光刻胶"
+              - id: "20.02.03"
+                name: "ArF/EUV光刻胶"
+              - id: "20.02.04"
+                name: "配套试剂(显影液/去胶液/稀释剂)"
+          - id: "20.03"
             name: "电子特气"
-          - id: "05.04"
+          - id: "20.04"
             name: "湿电子化学品"
-          - id: "05.05"
+          - id: "20.05"
             name: "靶材/蒸发料"
-          - id: "05.06"
+          - id: "20.06"
             name: "CMP抛光材料"
-          - id: "05.07"
+          - id: "20.07"
+            name: "掩膜版"
+          - id: "20.08"
             name: "封装基板/引线框架"
-          - id: "05.08"
+          - id: "20.09"
             name: "第三代半导体衬底(SiC/GaN)"
-      - id: "06"
-        name: "半导体设备"
+          - id: "20.10"
+            name: "其他材料(石英坩埚/金刚线/光罩等)"
+
+      # ===================== 设备视角 =====================
+      - id: "30"
+        name: "设备视角"
         relation_type: "SUPP"
-        description: "芯片制造所需各类设备"
+        description: "芯片制造所需各类设备的供应商、国产化、安徽资源"
         subcategories:
-          - id: "06.01"
+          - id: "30.01"
+            name: "单晶炉/拉晶设备"
+          - id: "30.02"
+            name: "切片机"
+          - id: "30.03"
             name: "光刻机"
-          - id: "06.02"
+          - id: "30.04"
             name: "刻蚀设备"
-          - id: "06.03"
-            name: "薄膜沉积设备"
-          - id: "06.04"
+          - id: "30.05"
+            name: "薄膜沉积设备(CVD/PVD/ALD)"
+          - id: "30.06"
             name: "离子注入设备"
-          - id: "06.05"
+          - id: "30.07"
             name: "CMP设备"
-          - id: "06.06"
+          - id: "30.08"
             name: "清洗设备"
-          - id: "06.07"
+          - id: "30.09"
             name: "检测/量测设备"
-          - id: "06.08"
+          - id: "30.10"
             name: "封装设备"
-          - id: "06.09"
+          - id: "30.11"
             name: "测试设备"
-      - id: "07"
-        name: "EDA与IP"
-        relation_type: "SUPP"
-        description: "芯片设计所需的EDA工具和IP核"
-        subcategories:
-          - id: "07.01"
-            name: "EDA工具"
-          - id: "07.02"
-            name: "IP核授权"
-      - id: "08"
-        name: "支撑体系"
+
+      # ===================== 产业机会汇总 =====================
+      - id: "90"
+        name: "产业机会汇总"
         relation_type: "TAX"
-        description: "产业服务平台、科研院所、行业协会等"
+        description: "安徽/长三角企业、新闻动态、产研院合作机会"
         subcategories:
-          - id: "08.01"
-            name: "产业平台/园区"
-          - id: "08.02"
-            name: "科研院所/高校"
-          - id: "08.03"
-            name: "行业协会/联盟"
-          - id: "08.04"
-            name: "检测认证机构"
+          - id: "90.01"
+            name: "安徽企业清单"
+          - id: "90.02"
+            name: "长三角企业清单"
+          - id: "90.03"
+            name: "新闻/事件追踪"
+          - id: "90.04"
+            name: "产研院合作切入点"
+          - id: "90.05"
+            name: "研究总结与报告"
 
 # 研究深度参数
 depth_control:
-  min_enterprises_per_node: 3      # 每个节点最少核实企业数
-  max_enterprises_per_node: 10     # 每个节点最多核实企业数（避免过度研究）
-  min_sources_per_node: 3          # 每个节点最少来源数
-  require_region_scan: true        # 是否必须调研安徽/长三角资源
-  require_opportunity_analysis: true  # 是否必须分析产研院切入点
+  min_enterprises_per_node: 3
+  max_enterprises_per_node: 10
+  min_sources_per_node: 3
+  require_region_scan: true
+  require_opportunity_analysis: true
+  require_news_tracking: true
 
 # 质量控制
 quality_control:
-  forbid_fabrication: true         # 禁止编造
-  require_source_for_claims: true  # 关键事实必须有来源
-  flag_inference: true             # 推断必须标注
-  check_relevance: true            # 每步检查是否跑题
+  forbid_fabrication: true
+  require_source_for_claims: true
+  flag_inference: true
+  check_relevance: true
 
 # 输出配置
 output:

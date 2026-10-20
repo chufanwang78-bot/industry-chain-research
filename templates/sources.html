@@ -49,7 +49,7 @@
 let allSources = [];
 
 async function loadSources() {
-    const res = await fetch('/api/sources');
+    const res = await fetch(`/api/${PROJECT}/sources`);
     const data = await res.json();
     allSources = data.sources || [];
     renderSources(allSources);

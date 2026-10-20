@@ -1,33 +1,22 @@
 #!/usr/bin/env python3
 """
-产业链研究工作台 — Flask Web 应用
+产业链研究工作台 — Flask Web 应用（多项目版）
 启动: python3 app.py
 访问: http://localhost:5000
 """
 
-import os
 import yaml
-import json
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 
-# === 路径 ===
 BASE_DIR = Path(__file__).parent
 CONFIG_DIR = BASE_DIR / "config"
-NODES_DIR = BASE_DIR / "nodes"
-SOURCES_DIR = BASE_DIR / "sources"
-LOGS_DIR = BASE_DIR / "logs"
-
-WORKFLOW_CONFIG = CONFIG_DIR / "workflow.yaml"
-NODES_REGISTRY = CONFIG_DIR / "nodes-registry.yaml"
-SOURCE_INDEX = SOURCES_DIR / "source-index.yaml"
-WORKFLOW_LOG = LOGS_DIR / "workflow-log.md"
 
 app = Flask(__name__)
 
 
-# === 数据加载 ===
+# === 数据层 ===
 
 def load_yaml(path):
     if not path.exists():
@@ -40,54 +29,112 @@ def save_yaml(path, data):
     with open(path, "w", encoding="utf-8") as f:
         yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
-def get_registry():
-    return load_yaml(NODES_REGISTRY)
+def get_projects():
+    return load_yaml(CONFIG_DIR / "projects.yaml")
 
-def save_registry(data):
-    save_yaml(NODES_REGISTRY, data)
+def get_registry(project):
+    """Per-project node registry. Falls back to shared file for chip project."""
+    project_file = CONFIG_DIR / f"nodes-registry-{project}.yaml"
+    if project_file.exists():
+        return load_yaml(project_file)
+    # Fallback: chip project uses the original file
+    if project == "芯片":
+        return load_yaml(CONFIG_DIR / "nodes-registry.yaml")
+    return {"industry": project, "nodes": {}}
 
-def get_workflow():
-    return load_yaml(WORKFLOW_CONFIG)
+def save_registry(project, data):
+    if project == "芯片":
+        save_yaml(CONFIG_DIR / "nodes-registry.yaml", data)
+    else:
+        save_yaml(CONFIG_DIR / f"nodes-registry-{project}.yaml", data)
 
-def get_sources():
-    return load_yaml(SOURCE_INDEX)
+def get_workflow(project):
+    return load_yaml(CONFIG_DIR / "workflow.yaml")
+
+def get_sources(project):
+    return load_yaml(BASE_DIR / "sources" / "source-index.yaml")
 
 
-# === 页面路由 ===
+# === 项目首页 ===
 
 @app.route("/")
-def dashboard():
-    return render_template("dashboard.html")
+def project_home():
+    return render_template("project_home.html")
 
-@app.route("/chain-map")
-def chain_map():
-    return render_template("chain_map.html")
+@app.route("/api/projects")
+def api_projects():
+    data = get_projects()
+    # 更新每个项目的实时进度
+    for p in data.get("projects", []):
+        reg = get_registry(p["id"])
+        nodes = reg.get("nodes", {})
+        p["total_nodes"] = len(nodes)
+        p["done_nodes"] = sum(1 for n in nodes.values() if n.get("status") == "DONE")
+    return jsonify(data)
 
-@app.route("/nodes")
-def nodes_list():
-    return render_template("nodes.html")
 
-@app.route("/node/<node_id>")
-def node_detail(node_id):
-    return render_template("node_detail.html", node_id=node_id)
+@app.route("/api/projects", methods=["POST"])
+def api_create_project():
+    data = request.get_json()
+    name = data.get("name", "").strip()
+    if not name:
+        return jsonify({"error": "项目名称不能为空"}), 400
 
-@app.route("/sources")
-def sources_page():
-    return render_template("sources.html")
+    projects = get_projects()
+    existing_ids = [p["id"] for p in projects.get("projects", [])]
+    if name in existing_ids:
+        return jsonify({"error": f"项目 '{name}' 已存在"}), 400
 
-@app.route("/workflow")
-def workflow_page():
-    return render_template("workflow.html")
+    projects.setdefault("projects", []).append({
+        "id": name,
+        "name": data.get("display_name", name),
+        "code": data.get("code", ""),
+        "status": "进行中",
+        "description": data.get("description", ""),
+        "start_date": datetime.now().strftime("%Y-%m-%d"),
+        "total_nodes": 0,
+        "done_nodes": 0,
+        "icon": data.get("icon", "📊"),
+    })
+    save_yaml(CONFIG_DIR / "projects.yaml", projects)
+    return jsonify({"ok": True, "id": name})
+
+
+# === 项目内页面路由 ===
+
+@app.route("/<project>/")
+def dashboard(project):
+    return render_template("dashboard.html", project=project)
+
+@app.route("/<project>/chain-map")
+def chain_map(project):
+    return render_template("chain_map.html", project=project)
+
+@app.route("/<project>/nodes")
+def nodes_list(project):
+    return render_template("nodes.html", project=project)
+
+@app.route("/<project>/node/<node_id>")
+def node_detail(project, node_id):
+    return render_template("node_detail.html", project=project, node_id=node_id)
+
+@app.route("/<project>/sources")
+def sources_page(project):
+    return render_template("sources.html", project=project)
+
+@app.route("/<project>/workflow")
+def workflow_page(project):
+    return render_template("workflow.html", project=project)
 
 
 # === API 路由 ===
 
-@app.route("/api/status")
-def api_status():
-    reg = get_registry()
+@app.route("/api/<project>/status")
+def api_status(project):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     if not nodes:
-        return jsonify({"error": "节点台账为空", "total": 0})
+        return jsonify({"error": "节点台账为空", "total": 0, "project": project})
 
     status_count = {}
     for n in nodes.values():
@@ -95,8 +142,6 @@ def api_status():
         status_count[s] = status_count.get(s, 0) + 1
 
     total = len(nodes)
-
-    # 按一级分类统计
     categories = []
     top_ids = sorted([k for k in nodes if "." not in k],
                      key=lambda x: int(x) if x.isdigit() else x)
@@ -118,7 +163,8 @@ def api_status():
         })
 
     return jsonify({
-        "industry": reg.get("industry", ""),
+        "project": project,
+        "industry": reg.get("industry", project),
         "total": total,
         "done": status_count.get("DONE", 0),
         "wip": status_count.get("WIP", 0),
@@ -129,25 +175,20 @@ def api_status():
     })
 
 
-@app.route("/api/tree")
-def api_tree():
-    reg = get_registry()
-    nodes = reg.get("nodes", {})
-    return jsonify({"nodes": nodes})
+@app.route("/api/<project>/tree")
+def api_tree(project):
+    reg = get_registry(project)
+    return jsonify({"nodes": reg.get("nodes", {})})
 
 
-@app.route("/api/graph")
-def api_graph():
-    """返回 ECharts graph 所需的 nodes + links 数据"""
-    reg = get_registry()
+@app.route("/api/<project>/graph")
+def api_graph(project):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
 
     status_color = {
-        "DONE": "#22c55e",
-        "WIP": "#3b82f6",
-        "TODO": "#94a3b8",
-        "GAP": "#eab308",
-        "HOLD": "#a855f7",
+        "DONE": "#22c55e", "WIP": "#3b82f6", "TODO": "#94a3b8",
+        "GAP": "#eab308", "HOLD": "#a855f7",
     }
 
     graph_nodes = []
@@ -168,7 +209,6 @@ def api_graph():
                 "children": n.get("children", []),
             }
         })
-
         parent = n.get("parent")
         if parent and parent in nodes:
             graph_links.append({
@@ -178,24 +218,17 @@ def api_graph():
             })
 
     categories = [{"name": f"层级{i}"} for i in range(4)]
-
-    return jsonify({
-        "nodes": graph_nodes,
-        "links": graph_links,
-        "categories": categories,
-    })
+    return jsonify({"nodes": graph_nodes, "links": graph_links, "categories": categories})
 
 
-@app.route("/api/node/<node_id>")
-def api_node(node_id):
-    reg = get_registry()
+@app.route("/api/<project>/node/<node_id>")
+def api_node(project, node_id):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     if node_id not in nodes:
         return jsonify({"error": f"节点 {node_id} 不存在"}), 404
 
     n = nodes[node_id]
-
-    # 读取研究文件
     content = ""
     rf = n.get("research_file", "")
     if rf:
@@ -203,56 +236,48 @@ def api_node(node_id):
         if rf_path.exists():
             content = rf_path.read_text(encoding="utf-8")
 
-    # 父节点信息
     parent_name = ""
     p = n.get("parent")
     if p and p in nodes:
         parent_name = nodes[p].get("name", "")
 
-    # 子节点信息
     children_info = []
     for c in n.get("children", []):
         if c in nodes:
             children_info.append({
-                "id": c,
-                "name": nodes[c].get("name", ""),
+                "id": c, "name": nodes[c].get("name", ""),
                 "status": nodes[c].get("status", "TODO"),
             })
 
     return jsonify({
-        "node": n,
-        "parent_name": parent_name,
-        "children_info": children_info,
-        "content": content,
+        "node": n, "parent_name": parent_name,
+        "children_info": children_info, "content": content,
     })
 
 
-@app.route("/api/node/<node_id>", methods=["PUT"])
-def api_node_update(node_id):
-    reg = get_registry()
+@app.route("/api/<project>/node/<node_id>", methods=["PUT"])
+def api_node_update(project, node_id):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     if node_id not in nodes:
         return jsonify({"error": "节点不存在"}), 404
 
     data = request.get_json()
     n = nodes[node_id]
-
     if "status" in data:
         n["status"] = data["status"]
     if "priority" in data:
         n["priority"] = data["priority"]
     if "description" in data:
         n["description"] = data["description"]
-
     n["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-    save_registry(reg)
+    save_registry(project, reg)
     return jsonify({"ok": True})
 
 
-@app.route("/api/node/<node_id>/file", methods=["PUT"])
-def api_node_file(node_id):
-    """保存研究文件内容"""
-    reg = get_registry()
+@app.route("/api/<project>/node/<node_id>/file", methods=["PUT"])
+def api_node_file(project, node_id):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     if node_id not in nodes:
         return jsonify({"error": "节点不存在"}), 404
@@ -261,15 +286,13 @@ def api_node_file(node_id):
     content = data.get("content", "")
     rf = nodes[node_id].get("research_file", "")
     if not rf:
-        # 自动生成文件路径
         n = nodes[node_id]
         parent_id = n.get("parent", "")
         if parent_id:
             parent = nodes.get(parent_id, {})
-            parent_name = parent.get("name", "")
-            folder = NODES_DIR / reg.get("industry", "未知") / f"{parent_id}-{parent_name}"
+            folder = BASE_DIR / "nodes" / project / f"{parent_id}-{parent.get('name','')}"
         else:
-            folder = NODES_DIR / reg.get("industry", "未知")
+            folder = BASE_DIR / "nodes" / project
         folder.mkdir(parents=True, exist_ok=True)
         rf = str(folder / f"{node_id}-{n['name']}.md").replace(str(BASE_DIR) + "/", "")
         nodes[node_id]["research_file"] = rf
@@ -278,59 +301,50 @@ def api_node_file(node_id):
     rf_path.parent.mkdir(parents=True, exist_ok=True)
     rf_path.write_text(content, encoding="utf-8")
     nodes[node_id]["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-    save_registry(reg)
+    save_registry(project, reg)
     return jsonify({"ok": True, "file": rf})
 
 
-@app.route("/api/sources")
-def api_sources():
-    src = get_sources()
-    return jsonify(src)
+@app.route("/api/<project>/sources")
+def api_sources(project):
+    return jsonify(get_sources(project))
 
 
-@app.route("/api/check")
-def api_check():
-    reg = get_registry()
+@app.route("/api/<project>/check")
+def api_check(project):
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     issues = []
-
     for nid, n in sorted(nodes.items()):
         status = n.get("status", "TODO")
         rf = n.get("research_file", "")
-
         if status == "DONE" and not rf:
-            issues.append({"level": "warning", "msg": f"{nid} {n['name']}: 标记为DONE但没有研究文件"})
-        if status == "DONE" and rf:
-            rf_path = BASE_DIR / rf
-            if not rf_path.exists():
-                issues.append({"level": "error", "msg": f"{nid} {n['name']}: 研究文件不存在 ({rf})"})
+            issues.append({"level": "warning", "msg": f"{nid} {n['name']}: DONE但无研究文件"})
+        if status == "DONE" and rf and not (BASE_DIR / rf).exists():
+            issues.append({"level": "error", "msg": f"{nid} {n['name']}: 研究文件不存在"})
         for c in n.get("children", []):
             if c not in nodes:
                 issues.append({"level": "error", "msg": f"{nid}: 子节点 '{c}' 不存在"})
             elif nodes[c].get("parent") != nid:
                 issues.append({"level": "error", "msg": f"{nid}: 子节点 '{c}' 父节点不一致"})
         parent = n.get("parent")
-        if parent and parent in nodes:
-            if nid not in nodes[parent].get("children", []):
-                issues.append({"level": "error", "msg": f"{nid}: 不在父节点 '{parent}' 的子列表中"})
-
+        if parent and parent in nodes and nid not in nodes[parent].get("children", []):
+            issues.append({"level": "error", "msg": f"{nid}: 不在父节点 '{parent}' 子列表中"})
     return jsonify({"issues": issues, "count": len(issues)})
 
 
-@app.route("/api/search")
-def api_search():
+@app.route("/api/<project>/search")
+def api_search(project):
     q = request.args.get("q", "").strip().lower()
     if not q:
         return jsonify({"results": []})
-
-    reg = get_registry()
+    reg = get_registry(project)
     nodes = reg.get("nodes", {})
     results = []
     for nid, n in nodes.items():
-        if q in nid.lower() or q in n.get("name", "").lower() or q in n.get("description", "").lower():
+        if q in nid.lower() or q in n.get("name", "").lower():
             results.append({
-                "id": nid,
-                "name": n.get("name", ""),
+                "id": nid, "name": n.get("name", ""),
                 "status": n.get("status", "TODO"),
                 "parent": n.get("parent", ""),
             })

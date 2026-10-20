@@ -1,0 +1,480 @@
+industry: 屏幕
+nodes:
+  '01':
+    id: '01'
+    name: LCD
+    relation_type: TAX
+    parent: null
+    status: DONE
+    priority: high
+    description: 液晶显示技术，通过液晶分子的偏转控制光的透过率来显示图像
+    children:
+    - '01.01'
+    - '01.02'
+    - '01.03'
+    - '01.04'
+    - '01.05'
+    - '01.06'
+    - '01.07'
+    - '01.08'
+    research_file: nodes/屏幕/01-LCD.md
+    last_updated: '2025-10-15'
+  '02':
+    id: '02'
+    name: OLED
+    relation_type: TAX
+    parent: null
+    status: DONE
+    priority: high
+    description: 有机发光二极管显示技术，自发光，无需背光模组
+    children:
+    - '02.01'
+    - '02.02'
+    - '02.03'
+    - '02.04'
+    research_file: nodes/屏幕/02-OLED.md
+    last_updated: '2025-10-15'
+  '01.01':
+    id: '01.01'
+    name: 背光模组
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 为LCD提供均匀面光源的核心模组
+    children:
+    - 01.01.01
+    - 01.01.02
+    - 01.01.03
+    - 01.01.04
+    - 01.01.05
+    - 01.01.06
+    research_file: nodes/屏幕/01-LCD/01.01-背光模组.md
+    last_updated: '2025-10-15'
+  01.01.01:
+    id: 01.01.01
+    name: LED灯条
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: high
+    description: 背光光源，将电能转化为光能
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.01-LED灯条.md
+    last_updated: '2026-10-19'
+  01.01.02:
+    id: 01.01.02
+    name: 导光板
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: high
+    description: 将LED点光源转化为均匀面光源
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.02-导光板.md
+    last_updated: '2026-10-19'
+  01.01.03:
+    id: 01.01.03
+    name: 扩散膜
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: medium
+    description: 使光线均匀扩散，消除亮点
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.03-扩散膜.md
+    last_updated: '2026-10-19'
+  01.01.04:
+    id: 01.01.04
+    name: 增亮膜(BEF)
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: medium
+    description: 通过棱镜结构将光线聚焦到正面视角，提高亮度
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.04-增亮膜BEF.md
+    last_updated: '2026-10-19'
+  01.01.05:
+    id: 01.01.05
+    name: 反射膜
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: medium
+    description: 将底部漏光反射回导光板，提高光利用率
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.05-反射膜.md
+    last_updated: '2026-10-19'
+  01.01.06:
+    id: 01.01.06
+    name: 其他背光材料
+    relation_type: TAX
+    parent: '01.01'
+    status: DONE
+    priority: low
+    description: 胶框、铁框、散热片等结构件
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.01.06-其他背光材料.md
+    last_updated: '2026-10-19'
+  '01.02':
+    id: '01.02'
+    name: 光学膜
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 调节光线偏振、透过率、增亮等光学功能的薄膜材料
+    children:
+    - 01.02.01
+    - 01.02.02
+    - 01.02.03
+    - 01.02.04
+    - 01.02.05
+    - 01.02.06
+    - 01.02.07
+    - 01.02.08
+    - 01.02.09
+    research_file: nodes/屏幕/01-LCD/01.02-光学膜.md
+    last_updated: '2025-10-15'
+  01.02.01:
+    id: 01.02.01
+    name: PVA膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: high
+    description: 聚乙烯醇膜，偏光片的核心光学层，负责偏振光的起偏
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.01-PVA膜.md
+    last_updated: '2026-10-19'
+  01.02.02:
+    id: 01.02.02
+    name: TAC膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: high
+    description: 三醋酸纤维素膜，偏光片的保护层，透光性好、耐候性强
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.02-TAC膜.md
+    last_updated: '2026-10-19'
+  01.02.03:
+    id: 01.02.03
+    name: 压敏胶(PSA)
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: medium
+    description: 用于偏光片贴合的粘接材料
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.03-压敏胶PSA.md
+    last_updated: '2026-10-19'
+  01.02.04:
+    id: 01.02.04
+    name: 保护膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: medium
+    description: 偏光片表面保护层
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.04-保护膜.md
+    last_updated: '2026-10-19'
+  01.02.05:
+    id: 01.02.05
+    name: 反射片
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: low
+    description: 反射光线提高光效
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.05-反射片.md
+    last_updated: '2026-10-19'
+  01.02.06:
+    id: 01.02.06
+    name: 增亮膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: medium
+    description: 棱镜膜，聚光增亮
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.06-增亮膜.md
+    last_updated: '2026-10-19'
+  01.02.07:
+    id: 01.02.07
+    name: 扩散膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: medium
+    description: 均匀扩散光线
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.07-扩散膜.md
+    last_updated: '2026-10-19'
+  01.02.08:
+    id: 01.02.08
+    name: 配向膜
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: medium
+    description: PI配向膜，控制液晶分子的排列方向
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.08-配向膜.md
+    last_updated: '2026-10-19'
+  01.02.09:
+    id: 01.02.09
+    name: 液晶材料
+    relation_type: TAX
+    parent: '01.02'
+    status: DONE
+    priority: high
+    description: 混合液晶、单晶、配向剂等
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.02.09-液晶材料.md
+    last_updated: '2026-10-19'
+  '01.03':
+    id: '01.03'
+    name: 玻璃基板
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 显示面板的基础承载材料
+    children:
+    - 01.03.01
+    - 01.03.02
+    research_file: nodes/屏幕/01-LCD/01.03-玻璃基板.md
+    last_updated: '2026-10-19'
+  01.03.01:
+    id: 01.03.01
+    name: 碱玻璃
+    relation_type: TAX
+    parent: '01.03'
+    status: DONE
+    priority: medium
+    description: 含碱金属氧化物的玻璃，用于低端显示
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.03.01-碱玻璃.md
+    last_updated: '2026-10-19'
+  01.03.02:
+    id: 01.03.02
+    name: 无碱玻璃
+    relation_type: TAX
+    parent: '01.03'
+    status: DONE
+    priority: high
+    description: 无碱金属氧化物的高精度玻璃基板，用于TFT-LCD
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.03.02-无碱玻璃.md
+    last_updated: '2026-10-19'
+  '01.04':
+    id: '01.04'
+    name: 彩色滤光片
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 将白光分解为RGB三原色，实现彩色显示
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.04-彩色滤光片.md
+    last_updated: '2026-10-19'
+  '01.05':
+    id: '01.05'
+    name: 偏光片
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 控制光线偏振方向的关键光学元件
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.05-偏光片.md
+    last_updated: '2026-10-19'
+  '01.06':
+    id: '01.06'
+    name: 驱动IC
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: high
+    description: 控制像素开关的集成电路芯片
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.06-驱动IC.md
+    last_updated: '2026-10-19'
+  '01.07':
+    id: '01.07'
+    name: 封装/框胶
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: medium
+    description: 面板边缘密封和封装材料
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.07-封装框胶.md
+    last_updated: '2026-10-19'
+  '01.08':
+    id: '01.08'
+    name: 基板
+    relation_type: TAX
+    parent: '01'
+    status: DONE
+    priority: medium
+    description: TFT阵列基板和彩膜基板
+    children: []
+    research_file: nodes/屏幕/01-LCD/01.08-基板.md
+    last_updated: '2026-10-19'
+  '02.01':
+    id: '02.01'
+    name: 有机发光材料
+    relation_type: TAX
+    parent: '02'
+    status: DONE
+    priority: high
+    description: OLED的核心发光材料体系
+    children:
+    - 02.01.01
+    - 02.01.02
+    - 02.01.03
+    - 02.01.04
+    - 02.01.05
+    - 02.01.06
+    research_file: nodes/屏幕/02-OLED/02.01-有机发光材料.md
+    last_updated: '2026-10-19'
+  02.01.01:
+    id: 02.01.01
+    name: 红光材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: high
+    description: 红色磷光/荧光发光材料
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.01-红光材料.md
+    last_updated: '2026-10-19'
+  02.01.02:
+    id: 02.01.02
+    name: 绿光材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: high
+    description: 绿色磷光/荧光发光材料
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.02-绿光材料.md
+    last_updated: '2026-10-19'
+  02.01.03:
+    id: 02.01.03
+    name: 蓝光材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: high
+    description: 蓝色荧光/磷光材料，寿命和效率是核心瓶颈
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.03-蓝光材料.md
+    last_updated: '2026-10-19'
+  02.01.04:
+    id: 02.01.04
+    name: 主体材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: high
+    description: 发光层的主体材料，承载发光客体
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.04-主体材料.md
+    last_updated: '2026-10-19'
+  02.01.05:
+    id: 02.01.05
+    name: 电子传输材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: medium
+    description: ETL层材料，传输电子
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.05-电子传输材料.md
+    last_updated: '2026-10-19'
+  02.01.06:
+    id: 02.01.06
+    name: 空穴传输材料
+    relation_type: TAX
+    parent: '02.01'
+    status: DONE
+    priority: medium
+    description: HTL层材料，传输空穴
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.01.06-空穴传输材料.md
+    last_updated: '2026-10-19'
+  '02.02':
+    id: '02.02'
+    name: 封装
+    relation_type: TAX
+    parent: '02'
+    status: DONE
+    priority: high
+    description: OLED对水氧极度敏感，封装是关键环节
+    children:
+    - 02.02.01
+    - 02.02.02
+    - 02.02.03
+    research_file: nodes/屏幕/02-OLED/02.02-封装.md
+    last_updated: '2026-10-19'
+  02.02.01:
+    id: 02.02.01
+    name: TFE薄膜封装
+    relation_type: TAX
+    parent: '02.02'
+    status: DONE
+    priority: high
+    description: 薄膜封装(Thin Film Encapsulation)，柔性OLED主流方案
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.02.01-TFE薄膜封装.md
+    last_updated: '2026-10-19'
+  02.02.02:
+    id: 02.02.02
+    name: 玻璃封装
+    relation_type: TAX
+    parent: '02.02'
+    status: DONE
+    priority: medium
+    description: 玻璃盖板+吸气剂封装方案
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.02.02-玻璃封装.md
+    last_updated: '2026-10-19'
+  02.02.03:
+    id: 02.02.03
+    name: 柔性封装
+    relation_type: TAX
+    parent: '02.02'
+    status: DONE
+    priority: high
+    description: 柔性显示用的可弯折封装方案
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.02.03-柔性封装.md
+    last_updated: '2026-10-19'
+  '02.03':
+    id: '02.03'
+    name: 基板
+    relation_type: TAX
+    parent: '02'
+    status: DONE
+    priority: high
+    description: OLED用玻璃基板或柔性PI基板
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.03-基板.md
+    last_updated: '2026-10-19'
+  '02.04':
+    id: '02.04'
+    name: 驱动IC
+    relation_type: TAX
+    parent: '02'
+    status: DONE
+    priority: high
+    description: OLED驱动芯片，含TDDI等
+    children: []
+    research_file: nodes/屏幕/02-OLED/02.04-驱动IC.md
+    last_updated: '2026-10-19'

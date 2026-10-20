@@ -47,6 +47,16 @@ body {
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.back-link {
+    display: block;
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    font-size: 12px;
+    margin-bottom: 16px;
+    transition: color 0.15s;
+}
+.back-link:hover { color: rgba(255,255,255,0.7); }
+
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo-icon { font-size: 28px; color: var(--primary); }
 .logo-title { color: #fff; font-size: 15px; font-weight: 600; }

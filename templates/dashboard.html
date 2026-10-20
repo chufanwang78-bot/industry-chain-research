@@ -72,7 +72,7 @@
 {% block scripts %}
 <script>
 async function loadDashboard() {
-    const res = await fetch('/api/status');
+    const res = await fetch(`/api/${PROJECT}/status`);
     const data = await res.json();
 
     if (data.error) return;
@@ -136,7 +136,11 @@ async function loadDashboard() {
         }]
     });
 
-    window.addEventListener('resize', () => { catChart.resize(); pieChart.resize(); });
+    let dashResizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(dashResizeTimer);
+    dashResizeTimer = setTimeout(() => { catChart.resize(); pieChart.resize(); }, 200);
+});
 }
 
 loadDashboard();
