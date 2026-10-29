@@ -49,22 +49,34 @@
 <div class="quick-actions">
     <h3>快速操作</h3>
     <div class="action-cards">
-        <a href="/chain-map" class="action-card">
+        <a href="/{{ project }}/chain-map" class="action-card">
             <div class="action-icon">🗺️</div>
             <div class="action-text">查看产业链图谱</div>
         </a>
-        <a href="/nodes" class="action-card">
+        <a href="/{{ project }}/nodes" class="action-card">
             <div class="action-icon">📋</div>
             <div class="action-text">管理研究节点</div>
         </a>
-        <a href="/workflow" class="action-card">
+        <a href="/{{ project }}/workflow" class="action-card">
             <div class="action-icon">⚙️</div>
             <div class="action-text">工作流指南</div>
         </a>
-        <a href="/sources" class="action-card">
+        <a href="/{{ project }}/sources" class="action-card">
             <div class="action-icon">📚</div>
             <div class="action-text">来源管理</div>
         </a>
+    </div>
+</div>
+
+<!-- 最新动态 + 贡献排行 -->
+<div class="chart-row">
+    <div class="chart-panel" style="flex: 1.4;">
+        <h3>📰 最新动态</h3>
+        <div id="activityFeed" class="feed-list"><p class="text-muted">加载中...</p></div>
+    </div>
+    <div class="chart-panel" style="flex: 1;">
+        <h3>👥 贡献排行</h3>
+        <div id="contribList" class="contrib-list"><p class="text-muted">加载中...</p></div>
     </div>
 </div>
 {% endblock %}
@@ -144,5 +156,45 @@ window.addEventListener('resize', () => {
 }
 
 loadDashboard();
+loadActivity();
+
+async function loadActivity() {
+    const res = await fetch(`/api/${PROJECT}/activity?limit=10`);
+    const d = await res.json();
+    const feed = d.feed || [];
+    const feedBox = document.getElementById('activityFeed');
+    if (!feed.length) {
+        feedBox.innerHTML = '<p class="text-muted">暂无动态</p>';
+    } else {
+        feedBox.innerHTML = feed.map(i => {
+            const r = i.row || {};
+            const icon = i.type === 'company' ? '🏢' : '📰';
+            const title = i.type === 'company' ? escapeHtml(r['企业'] || '') : escapeHtml(r['企业'] || '') + (r['事件'] ? '：' + escapeHtml(r['事件']) : '');
+            const href = r.entry_id ? `/${encodeURIComponent(PROJECT)}/entry/${encodeURIComponent(r.entry_id)}` : `/${encodeURIComponent(PROJECT)}/node/${encodeURIComponent(i.node_id)}`;
+            return `<a class="feed-item" href="${href}">
+                <div class="feed-icon">${icon}</div>
+                <div class="feed-body">
+                    <div class="feed-title">${title}</div>
+                    <div class="feed-meta"><span>📍 ${escapeHtml(i.node_name)}</span><span>👤 ${escapeHtml(r.author || '匿名')}</span><span>🕒 ${escapeHtml(r.timestamp || '')}</span></div>
+                </div>
+            </a>`;
+        }).join('');
+    }
+    const contrib = d.contributors || [];
+    const cBox = document.getElementById('contribList');
+    if (!contrib.length) {
+        cBox.innerHTML = '<p class="text-muted">暂无贡献</p>';
+    } else {
+        const max = Math.max(...contrib.map(c => c.count));
+        cBox.innerHTML = contrib.slice(0, 8).map((c, idx) => `
+            <div class="contributor-row">
+                <span class="contrib-rank">${idx + 1}</span>
+                <span class="contrib-name">👤 ${escapeHtml(c.name)}</span>
+                <div class="contrib-bar"><div class="contrib-fill" style="width: ${Math.round(c.count / max * 100)}%"></div></div>
+                <span class="contrib-count">${c.count}</span>
+            </div>`).join('');
+    }
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 </script>
 {% endblock %}

@@ -179,9 +179,31 @@
             font-size: 14px;
             cursor: pointer;
         }
+        .home-topbar {
+            display: flex; justify-content: flex-end; align-items: center; gap: 12px;
+            padding: 14px 24px;
+        }
+        .home-topbar-user {
+            display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-size: 14px;
+        }
+        .home-topbar-link { color: #60a5fa; text-decoration: none; font-size: 13px; margin-left: 8px; }
+        .home-topbar-link:hover { text-decoration: underline; }
+        .logout-btn {
+            background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.15); }
     </style>
 </head>
 <body>
+    <div class="home-topbar">
+        <div class="home-topbar-user">
+            <span class="user-avatar">{{ current_user.display_name[0] if current_user and current_user.display_name else '?' }}</span>
+            <span>{{ current_user.display_name if current_user else '' }}</span>
+            {% if current_user and current_user.role == 'admin' %}<a href="/users" class="home-topbar-link">👥 账号管理</a>{% endif %}
+        </div>
+        <button class="logout-btn" onclick="doLogout()">⏻ 退出</button>
+    </div>
     <div class="home-container">
         <div class="home-header">
             <h1>⬡ 产业链研究工作台</h1>
@@ -278,6 +300,11 @@
         } else {
             alert(data.error || '创建失败');
         }
+    }
+
+    async function doLogout() {
+        await fetch('/api/logout', { method: 'POST' });
+        location.href = '/login';
     }
 
     loadProjects();

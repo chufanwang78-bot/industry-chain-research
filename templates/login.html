@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 / 注册 — 产业链研究工作台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { display: block; background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%); min-height: 100vh; }
+        .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-card { background: #fff; border-radius: 16px; padding: 32px 32px 28px; width: 400px; max-width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
+        .login-logo { text-align: center; margin-bottom: 20px; }
+        .login-logo .icon { font-size: 40px; }
+        .login-logo h1 { font-size: 20px; color: #1e293b; margin: 10px 0 4px; }
+        .login-logo p { font-size: 13px; color: #64748b; }
+        .auth-tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 18px; }
+        .auth-tab { flex: 1; padding: 10px; border: none; background: none; font-size: 15px; cursor: pointer; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .auth-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; font-weight: 600; }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+        .login-card label { display: block; font-size: 13px; color: #64748b; margin: 12px 0 6px; }
+        .login-card input { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; }
+        .login-card input:focus { border-color: #3b82f6; }
+        .auth-btn { width: 100%; margin-top: 20px; padding: 11px; background: #3b82f6; color: #fff; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        .auth-btn:hover { background: #2563eb; }
+        .auth-error { display: none; margin-top: 12px; background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+        .auth-hint { margin-top: 16px; background: #eff6ff; color: #1d4ed8; border-radius: 8px; padding: 10px 12px; font-size: 12px; line-height: 1.6; }
+        .switch-line { text-align: center; margin-top: 14px; font-size: 13px; color: #64748b; }
+        .switch-line a { color: #3b82f6; cursor: pointer; text-decoration: none; }
+        .switch-line a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-wrap">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="icon">⬡</div>
+                <h1>产业链研究工作台</h1>
+                <p>请先登录后再使用</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">登录</button>
+                <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">注册</button>
+            </div>
+
+            <!-- 登录面板 -->
+            <div class="auth-panel active" id="panelLogin">
+                <label for="username">账号</label>
+                <input type="text" id="username" placeholder="请输入账号" autocomplete="username">
+                <label for="password">密码</label>
+                <input type="password" id="password" placeholder="请输入密码" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+                <button class="auth-btn" onclick="doLogin()">登 录</button>
+                <div class="auth-error" id="loginError"></div>
+                <div class="switch-line">还没有账号？<a onclick="switchTab('register')">立即注册</a></div>
+            </div>
+
+            <!-- 注册面板 -->
+            <div class="auth-panel" id="panelRegister">
+                <label for="regUsername">账号（登录用，字母/数字/下划线）</label>
+                <input type="text" id="regUsername" placeholder="例如：zhangsan 或工号" autocomplete="username">
+                <label for="regDisplay">显示姓名（填写信息时记录的名字）</label>
+                <input type="text" id="regDisplay" placeholder="例如：张三">
+                <label for="regPassword">密码（至少 6 位）</label>
+                <input type="password" id="regPassword" placeholder="设置密码" autocomplete="new-password">
+                <label for="regPassword2">确认密码</label>
+                <input type="password" id="regPassword2" placeholder="再输入一次密码" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+                <button class="auth-btn" onclick="doRegister()">注册并登录</button>
+                <div class="auth-error" id="regError"></div>
+                <div class="switch-line">已有账号？<a onclick="switchTab('login')">返回登录</a></div>
+            </div>
+
+            <div class="auth-hint">首次使用：管理员账号 <b>admin</b>，初始密码 <b>admin123</b>（登录后请到「账号管理」修改）。<br>其他同事可点上方「注册」自助开通账号。</div>
+        </div>
+    </div>
+    <script>
+    const nextUrl = {{ next | tojson }};
+
+    function switchTab(tab) {
+        document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+        document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+        document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+        document.getElementById('panelRegister').classList.toggle('active', tab === 'register');
+    }
+
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    async function doLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        showError('loginError', ''); document.getElementById('loginError').style.display = 'none';
+        if (!username || !password) { showError('loginError', '请输入账号和密码'); return; }
+        const res = await fetch('/api/login', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+            location.href = nextUrl || '/';
+        } else {
+            const d = await res.json().catch(() => ({}));
+            showError('loginError', d.error || '登录失败');
+        }
+    }
+
+    async function doRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const display_name = document.getElementById('regDisplay').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const password2 = document.getElementById('regPassword2').value;
+        document.getElementById('regError').style.display = 'none';
+        if (!username || !display_name || !password || !password2) { showError('regError', '请把信息填写完整'); return; }
+        if (password !== password2) { showError('regError', '两次输入的密码不一致'); return; }
+        const res = await fetch('/api/register', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, display_name, password, password2 })
+        });
+        if (res.ok) {
+            location.href = nextUrl || '/';
+        } else {
+            const d = await res.json().catch(() => ({}));
+            showError('regError', d.error || '注册失败');
+        }
+    }
+    </script>
+</body>
+</html>

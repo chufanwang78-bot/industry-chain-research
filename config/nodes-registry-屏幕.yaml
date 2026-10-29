@@ -8,6 +8,7 @@ nodes:
     status: DONE
     priority: high
     description: 液晶显示技术，通过液晶分子的偏转控制光的透过率来显示图像
+    owner: 'cc'
     children:
     - '01.01'
     - '01.02'

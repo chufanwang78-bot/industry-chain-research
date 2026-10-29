@@ -13,6 +13,7 @@
             <option value="GAP">⚠️ 待补充</option>
             <option value="HOLD">⏸️ 暂缓</option>
         </select>
+        <input type="text" id="ownerFilter" placeholder="负责人..." oninput="filterNodes()">
         <input type="text" id="nodeSearch" placeholder="搜索节点..." oninput="filterNodes()">
     </div>
 </div>
@@ -26,6 +27,7 @@
                 <th>关系类型</th>
                 <th>状态</th>
                 <th>优先级</th>
+                <th>负责人</th>
                 <th>父节点</th>
                 <th>更新日期</th>
                 <th>操作</th>
@@ -40,11 +42,13 @@
 {% block scripts %}
 <script>
 let allNodes = [];
+let nodeMap = {};
 
 async function loadNodes() {
     const res = await fetch(`/api/${PROJECT}/tree`);
     const data = await res.json();
     allNodes = Object.entries(data.nodes).map(([id, n]) => ({ id, ...n }));
+    nodeMap = Object.fromEntries(allNodes.map(n => [n.id, n.name]));
     renderNodes(allNodes);
 }
 
@@ -70,7 +74,8 @@ function renderNodes(nodes) {
             <td>${relMap[n.relation_type] || '-'}</td>
             <td>${statusMap[n.status] || n.status}</td>
             <td>${prioMap[n.priority] || '-'}</td>
-            <td>${n.parent || '-'}</td>
+            <td>${n.owner || '<span class="text-muted">未认领</span>'}</td>
+            <td>${n.parent ? `${n.parent} ${nodeMap[n.parent] || ''}` : '-'}</td>
             <td>${n.last_updated || '-'}</td>
             <td><a href="/${PROJECT}/node/${n.id}" class="btn-sm">查看</a></td>
         </tr>
@@ -80,9 +85,11 @@ function renderNodes(nodes) {
 function filterNodes() {
     const status = document.getElementById('statusFilter').value;
     const q = document.getElementById('nodeSearch').value.toLowerCase();
+    const owner = document.getElementById('ownerFilter').value.toLowerCase();
 
     let filtered = allNodes;
     if (status) filtered = filtered.filter(n => n.status === status);
+    if (owner) filtered = filtered.filter(n => (n.owner || '').toLowerCase().includes(owner));
     if (q) filtered = filtered.filter(n =>
         n.id.toLowerCase().includes(q) || n.name.toLowerCase().includes(q)
     );

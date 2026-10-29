@@ -5,6 +5,8 @@
 <div class="page-header">
     <h1 id="nodeTitle">加载中...</h1>
     <div class="page-actions">
+        <span id="ownerBadge" class="text-muted" style="font-size:13px"></span>
+        <button class="btn btn-primary" id="claimBtn" onclick="openClaimModal()">🙋 认领此节点</button>
         <select id="statusSelect" onchange="updateNodeStatus()">
             <option value="TODO">⬜ 未开始</option>
             <option value="WIP">🔵 研究中</option>
@@ -35,38 +37,123 @@
         <span id="infoChildren" class="info-value">-</span>
     </div>
     <div class="info-item">
+        <span class="info-label">负责人</span>
+        <span id="infoOwner" class="info-value">-</span>
+    </div>
+    <div class="info-item">
         <span class="info-label">最后更新</span>
         <span id="infoUpdated" class="info-value">-</span>
     </div>
 </div>
 
-<!-- 内容区 -->
+<!-- 内容标签页 -->
 <div class="content-tabs">
-    <button class="tab-btn active" onclick="setTab('view')">查看</button>
-    <button class="tab-btn" onclick="setTab('edit')">编辑</button>
+    <button class="tab-btn active" onclick="setTab(event,'intro')">📖 节点介绍</button>
+    <button class="tab-btn" onclick="setTab(event,'companies')">🏢 企业信息 <span class="tab-count" id="tabCompCount"></span></button>
+    <button class="tab-btn" onclick="setTab(event,'news')">📰 新闻动态 <span class="tab-count" id="tabNewsCount"></span></button>
 </div>
 
-<div id="viewTab" class="tab-content active">
+<!-- 介绍 -->
+<div id="introTab" class="tab-content active">
+    <div class="intro-actions">
+        <button class="btn" id="editIntroBtn" onclick="toggleEditor()">✏️ 编辑介绍</button>
+    </div>
     <div class="markdown-body" id="researchContent">
         <p class="text-muted">加载中...</p>
     </div>
+    <div id="editorWrap" style="display:none; margin-top:12px;">
+        <textarea id="editor" class="markdown-editor" spellcheck="false"></textarea>
+        <div class="editor-actions">
+            <button class="btn btn-primary" onclick="saveContent()">保存</button>
+            <button class="btn" onclick="toggleEditor()">取消</button>
+            <span id="saveStatus" class="text-muted"></span>
+        </div>
+    </div>
 </div>
 
-<div id="editTab" class="tab-content">
-    <textarea id="editor" class="markdown-editor" spellcheck="false"></textarea>
-    <div class="editor-actions">
-        <button class="btn btn-primary" onclick="saveContent()">保存</button>
-        <button class="btn" onclick="setTab('view')">取消</button>
-        <span id="saveStatus" class="text-muted"></span>
+<!-- 企业信息 -->
+<div id="companiesTab" class="tab-content">
+    <div class="tab-toolbar">
+        <input type="text" id="compSearch" placeholder="🔍 搜索企业..." oninput="filterRows('company')">
+        <select id="compAuthor" onchange="filterRows('company')"><option value="">全部填写人</option></select>
+        <span class="count-pill" id="compCount">0 条</span>
+        <span class="toolbar-spacer"></span>
+        <button class="btn btn-primary" onclick="openAddModal('company')">＋ 添加企业</button>
+    </div>
+    <div id="compCards" class="entry-list"><p class="text-muted">加载中...</p></div>
+</div>
+
+<!-- 新闻动态 -->
+<div id="newsTab" class="tab-content">
+    <div class="tab-toolbar">
+        <input type="text" id="newsSearch" placeholder="🔍 搜索新闻..." oninput="filterRows('news')">
+        <select id="newsAuthor" onchange="filterRows('news')"><option value="">全部填写人</option></select>
+        <span class="count-pill" id="newsCount">0 条</span>
+        <span class="toolbar-spacer"></span>
+        <button class="btn btn-primary" onclick="openAddModal('news')">＋ 添加新闻</button>
+    </div>
+    <div id="newsCards" class="entry-list"><p class="text-muted">加载中...</p></div>
+</div>
+
+<!-- 认领弹窗 -->
+<div class="modal-mask" id="claimModal">
+    <div class="modal-card">
+        <div class="modal-head">认领节点 <button class="modal-close" onclick="closeClaimModal()">×</button></div>
+        <div class="modal-body">
+            <div class="form-hint" id="claimHint">将以当前登录身份认领</div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn" onclick="closeClaimModal()">取消</button>
+            <button class="btn btn-primary" onclick="submitClaim()">确认认领</button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加信息弹窗 -->
+<div class="modal-mask" id="addModal">
+    <div class="modal-card">
+        <div class="modal-head" id="addModalTitle">补充信息 <button class="modal-close" onclick="closeAddModal()">×</button></div>
+        <div class="modal-body" id="addModalBody"></div>
+        <div class="modal-foot">
+            <button class="btn" onclick="closeAddModal()">取消</button>
+            <button class="btn btn-primary" onclick="submitAdd()">提交</button>
+        </div>
+    </div>
+
+<!-- 疑似重复提示弹窗 -->
+<div class="modal-mask" id="dupModal">
+    <div class="modal-card" style="width:520px">
+        <div class="modal-head">⚠️ 疑似重复 <button class="modal-close" onclick="closeDupModal()">×</button></div>
+        <div class="modal-body" id="dupBody"></div>
+        <div class="modal-foot">
+            <button class="btn" onclick="closeDupModal()">取消，我去看看</button>
+            <button class="btn btn-primary" onclick="forceSubmit()">仍然提交</button>
+        </div>
+    </div>
+</div>
+
+<!-- 条目详情弹窗 -->
+<div class="modal-mask" id="entryModal">
+    <div class="modal-card">
+        <div class="modal-head"><span id="emTitle">详情</span> <button class="modal-close" onclick="closeEntryModal()">×</button></div>
+        <div class="modal-body" id="emBody"></div>
+        <div class="modal-foot">
+            <button class="btn btn-primary" onclick="closeEntryModal()">关闭</button>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/static/vendor/marked.min.js"></script>
 <script>
 const nodeId = '{{ node_id }}';
 let nodeData = null;
+let addType = 'company';
+let companyRows = [];
+let newsRows = [];
+let companyView = [];
+let newsView = [];
 
 async function loadNode() {
     const res = await fetch(`/api/${PROJECT}/node/${nodeId}`);
@@ -85,36 +172,175 @@ async function loadNode() {
     document.getElementById('infoRelation').textContent = relMap[n.relation_type] || n.relation_type || '-';
     document.getElementById('infoParent').textContent = nodeData.parent_name ? `${n.parent} ${nodeData.parent_name}` : '顶级节点';
     document.getElementById('infoChildren').textContent = nodeData.children_info.map(c => `${c.id} ${c.name}`).join(', ') || '无';
+    document.getElementById('infoOwner').textContent = n.owner || '未认领';
     document.getElementById('infoUpdated').textContent = n.last_updated || '-';
 
-    // 渲染 Markdown
-    const content = nodeData.content || '（暂无研究内容，点击"编辑"开始填写）';
+    const content = nodeData.content || '（暂无节点介绍，点右上角"✏️ 编辑介绍"开始填写）';
     document.getElementById('researchContent').innerHTML = marked.parse(content);
     document.getElementById('editor').value = nodeData.content || '';
+
+    loadRows();
 }
 
-function setTab(tab) {
+async function loadRows() {
+    const res = await fetch(`/api/${PROJECT}/node/${nodeId}/rows`);
+    const d = await res.json();
+    companyRows = d.companies || [];
+    newsRows = d.news || [];
+
+    document.getElementById('tabCompCount').textContent = companyRows.length ? `(${companyRows.length})` : '';
+    document.getElementById('tabNewsCount').textContent = newsRows.length ? `(${newsRows.length})` : '';
+
+    // 填充作者下拉
+    const compAuthors = [...new Set(companyRows.map(r => r.author || '匿名'))];
+    const newsAuthors = [...new Set(newsRows.map(r => r.author || '匿名'))];
+    fillAuthorSelect('compAuthor', compAuthors);
+    fillAuthorSelect('newsAuthor', newsAuthors);
+
+    renderCompanies(companyRows);
+    renderNews(newsRows);
+}
+
+function fillAuthorSelect(id, authors) {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">全部填写人</option>' + authors.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    if (cur) sel.value = cur;
+}
+
+function ageBadge(ts) {
+    if (!ts) return '<span class="age-badge age-unknown">无时间</span>';
+    const d = new Date(String(ts).replace(' ', 'T'));
+    if (isNaN(d.getTime())) return `<span class="age-badge age-unknown">${escapeHtml(ts)}</span>`;
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days < 0) return '<span class="age-badge age-green">今天</span>';
+    if (days <= 30) return `<span class="age-badge age-green">${days} 天前</span>`;
+    if (days <= 90) return `<span class="age-badge age-yellow">${days} 天前</span>`;
+    return `<span class="age-badge age-red">${days} 天前</span>`;
+}
+
+function reviewBadge(r) {
+    const s = r['复核状态'] || '待复核';
+    const cls = s === '已复核' ? 'review-done' : 'review-pending';
+    return `<span class="review-badge ${cls}">${escapeHtml(s)}</span>`;
+}
+
+function corrBadge(r) {
+    return r['纠错状态'] === '有纠错' ? '<span class="badge badge-gap">🚩 有纠错</span>' : '';
+}
+
+function renderCompanies(rows) {
+    document.getElementById('compCount').textContent = rows.length + ' 条';
+    const box = document.getElementById('compCards');
+    if (!rows.length) {
+        box.innerHTML = '<div class="empty-state">暂无企业信息，点右上角"＋ 添加企业"开始补充</div>';
+        return;
+    }
+    companyView = rows;
+    box.innerHTML = rows.map((r, idx) => {
+        const tags = [r['所在地'], r['主要产品'], r['产业化状态'], r['核实状态']]
+            .filter(x => x && x !== '-')
+            .map(x => `<span class="tag">${escapeHtml(x)}</span>`).join('');
+        const src = r['来源'] ? escapeHtml(r['来源']) : '';
+        const link = r['来源链接'] ? `<a class="entry-link" href="${escapeHtml(r['来源链接'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">原文链接 ↗</a>` : '';
+        return `<div class="entry-card" onclick="gotoEntry('${r.entry_id}')">
+            <div class="entry-head">
+                <span class="entry-author">👤 ${escapeHtml(r.author || '匿名')}</span>
+                <span class="entry-time">🕒 ${escapeHtml(r.timestamp || '')}</span>
+                ${ageBadge(r.timestamp)}
+                ${reviewBadge(r)}
+                ${corrBadge(r)}
+            </div>
+            <div class="entry-title">🏢 ${escapeHtml(r['企业'] || '')}</div>
+            ${tags ? `<div class="entry-tags">${tags}</div>` : ''}
+            ${(src || link) ? `<div class="entry-src">📎 来源：${src} ${link}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+
+function renderNews(rows) {
+    document.getElementById('newsCount').textContent = rows.length + ' 条';
+    const box = document.getElementById('newsCards');
+    if (!rows.length) {
+        box.innerHTML = '<div class="empty-state">暂无新闻动态，点右上角"＋ 添加新闻"开始补充</div>';
+        return;
+    }
+    newsView = rows;
+    box.innerHTML = rows.map((r, idx) => {
+        const tags = [r['日期'], r['状态']]
+            .filter(x => x && x !== '-')
+            .map(x => `<span class="tag">${escapeHtml(x)}</span>`).join('');
+        const src = r['来源'] ? escapeHtml(r['来源']) : '';
+        const link = r['来源链接'] ? `<a class="entry-link" href="${escapeHtml(r['来源链接'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">原文链接 ↗</a>` : '';
+        return `<div class="entry-card" onclick="gotoEntry('${r.entry_id}')">
+            <div class="entry-head">
+                <span class="entry-author">👤 ${escapeHtml(r.author || '匿名')}</span>
+                <span class="entry-time">🕒 ${escapeHtml(r.timestamp || '')}</span>
+                ${ageBadge(r.timestamp)}
+                ${reviewBadge(r)}
+                ${corrBadge(r)}
+            </div>
+            <div class="entry-title">📰 ${escapeHtml(r['企业'] || '')}${r['事件'] ? '：' + escapeHtml(r['事件']) : ''}</div>
+            ${tags ? `<div class="entry-tags">${tags}</div>` : ''}
+            ${(src || link) ? `<div class="entry-src">📎 来源：${src} ${link}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+
+function filterRows(type) {
+    if (type === 'company') {
+        const q = document.getElementById('compSearch').value.trim().toLowerCase();
+        const a = document.getElementById('compAuthor').value;
+        renderCompanies(companyRows.filter(r => {
+            if (a && (r.author || '匿名') !== a) return false;
+            if (!q) return true;
+            return JSON.stringify(r).toLowerCase().includes(q);
+        }));
+    } else {
+        const q = document.getElementById('newsSearch').value.trim().toLowerCase();
+        const a = document.getElementById('newsAuthor').value;
+        renderNews(newsRows.filter(r => {
+            if (a && (r.author || '匿名') !== a) return false;
+            if (!q) return true;
+            return JSON.stringify(r).toLowerCase().includes(q);
+        }));
+    }
+}
+
+function gotoEntry(id) {
+    if (id && id !== 'undefined') location.href = `/${encodeURIComponent(PROJECT)}/entry/${encodeURIComponent(id)}`;
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function setTab(ev, tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
+    ev.target.classList.add('active');
     document.getElementById(tab + 'Tab').classList.add('active');
+}
+
+function toggleEditor() {
+    const wrap = document.getElementById('editorWrap');
+    const show = wrap.style.display === 'none';
+    wrap.style.display = show ? 'block' : 'none';
+    document.getElementById('editIntroBtn').textContent = show ? '🔒 收起编辑' : '✏️ 编辑介绍';
+    if (show) document.getElementById('editor').focus();
 }
 
 async function updateNodeStatus() {
     const status = document.getElementById('statusSelect').value;
-    await fetch(`/api/node/${nodeId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+    await fetch(`/api/${PROJECT}/node/${nodeId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status })
     });
 }
 
 async function updateNodePriority() {
     const priority = document.getElementById('prioritySelect').value;
-    await fetch(`/api/node/${nodeId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priority })
+    await fetch(`/api/${PROJECT}/node/${nodeId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ priority })
     });
 }
 
@@ -122,18 +348,180 @@ async function saveContent() {
     const content = document.getElementById('editor').value;
     document.getElementById('saveStatus').textContent = '保存中...';
     const res = await fetch(`/api/${PROJECT}/node/${nodeId}/file`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content })
     });
     const data = await res.json();
     if (data.ok) {
-        document.getElementById('saveStatus').textContent = '✅ 已保存: ' + data.file;
+        document.getElementById('saveStatus').textContent = '✅ 已保存';
         document.getElementById('researchContent').innerHTML = marked.parse(content);
     } else {
         document.getElementById('saveStatus').textContent = '❌ 保存失败';
     }
 }
+
+// ---- 认领 ----
+function openClaimModal() {
+    document.getElementById('claimHint').textContent = '认领人将记录为：' + (CURRENT_USER ? CURRENT_USER.display_name : '未登录');
+    document.getElementById('claimModal').classList.add('active');
+}
+function closeClaimModal() { document.getElementById('claimModal').classList.remove('active'); }
+async function submitClaim() {
+    const res = await fetch(`/api/${PROJECT}/node/${nodeId}/claim`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
+    });
+    const d = await res.json();
+    if (d.ok) {
+        closeClaimModal();
+        document.getElementById('infoOwner').textContent = d.owner;
+        alert('认领成功：' + d.owner);
+    } else {
+        alert('认领失败：' + (d.error || ''));
+    }
+}
+
+// ---- 添加信息 ----
+function openAddModal(type) {
+    addType = type;
+    const title = type === 'company' ? '添加企业信息' : '添加新闻动态';
+    document.getElementById('addModalTitle').childNodes[0].textContent = title + ' ';
+    const body = document.getElementById('addModalBody');
+    if (type === 'company') {
+        body.innerHTML = `
+            <div class="form-hint">将以「${CURRENT_USER ? CURRENT_USER.display_name : '未登录'}」的身份记录</div>
+            <label class="form-label">企业名 *</label>
+            <input type="text" id="f_企业" class="form-input" placeholder="例如：激智科技">
+            <label class="form-label">所在地</label>
+            <input type="text" id="f_所在地" class="form-input" placeholder="例如：宁波">
+            <label class="form-label">主要产品</label>
+            <input type="text" id="f_主要产品" class="form-input" placeholder="例如：扩散膜">
+            <label class="form-label">产业化状态</label>
+            <input type="text" id="f_产业化状态" class="form-input" placeholder="例如：量产 / 在建 / 待核实">
+            <label class="form-label">核实状态</label>
+            <input type="text" id="f_核实状态" class="form-input" placeholder="例如：已核实">
+            <label class="form-label">来源（内部记录 / 官网 / 新闻报道等）</label>
+            <input type="text" id="f_来源" class="form-input" placeholder="例如：产研院内部记录">
+            <label class="form-label">来源链接（原文 URL，可选）</label>
+            <input type="text" id="f_来源链接" class="form-input" placeholder="https://...">
+        `;
+    } else {
+        body.innerHTML = `
+            <div class="form-hint">将以「${CURRENT_USER ? CURRENT_USER.display_name : '未登录'}」的身份记录</div>
+            <label class="form-label">日期</label>
+            <input type="text" id="f_日期" class="form-input" placeholder="例如：2026-10-22">
+            <label class="form-label">企业 *</label>
+            <input type="text" id="f_企业" class="form-input" placeholder="例如：合肥乐凯">
+            <label class="form-label">事件</label>
+            <textarea id="f_事件" class="form-input" rows="3" placeholder="发生了什么"></textarea>
+            <label class="form-label">状态（跟进 / 关注）</label>
+            <input type="text" id="f_状态" class="form-input" placeholder="例如：关注">
+            <label class="form-label">来源（内部记录 / 官网 / 新闻报道等）</label>
+            <input type="text" id="f_来源" class="form-input" placeholder="例如：新闻报道">
+            <label class="form-label">来源链接（原文 URL，可选）</label>
+            <input type="text" id="f_来源链接" class="form-input" placeholder="https://...">
+        `;
+    }
+    document.getElementById('addModal').classList.add('active');
+}
+function closeAddModal() { document.getElementById('addModal').classList.remove('active'); }
+let pendingAdd = null;
+
+function buildAddPayload() {
+    const g = id => document.getElementById(id).value.trim();
+    const fields = addType === 'company'
+        ? { '企业': g('f_企业'), '所在地': g('f_所在地'), '主要产品': g('f_主要产品'), '产业化状态': g('f_产业化状态'), '核实状态': g('f_核实状态'), '来源': g('f_来源'), '来源链接': g('f_来源链接') }
+        : { '日期': g('f_日期'), '企业': g('f_企业'), '事件': g('f_事件'), '状态': g('f_状态'), '来源': g('f_来源'), '来源链接': g('f_来源链接') };
+    return { type: addType, fields };
+}
+
+async function postRow(payload, force) {
+    return await fetch(`/api/${PROJECT}/node/${nodeId}/rows`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...payload, force: !!force })
+    });
+}
+
+async function submitAdd() {
+    const payload = buildAddPayload();
+    const res = await postRow(payload, false);
+    const d = await res.json();
+    if (d.ok) {
+        closeAddModal();
+        loadRows();
+        return;
+    }
+    if (res.status === 409 && d.conflict) {
+        pendingAdd = payload;
+        showDuplicateWarning(d.duplicates || []);
+        return;
+    }
+    alert('提交失败：' + (d.error || ''));
+}
+
+function showDuplicateWarning(dups) {
+    const body = document.getElementById('dupBody');
+    const items = dups.map(d => {
+        const r = d.row || {};
+        const icon = d.type === 'company' ? '🏢' : '📰';
+        const title = (r['企业'] || '未填企业') + (r['事件'] ? '：' + r['事件'] : '');
+        const meta = [r['日期'], r['来源'], d.node_name].filter(x => x && x !== '-').map(x => escapeHtml(x)).join(' · ');
+        const rev = r['复核状态'] || '待复核';
+        return `<div class="dup-item">
+            <div><strong>${icon} ${escapeHtml(title)}</strong></div>
+            ${meta ? `<div class="text-muted" style="font-size:12px;margin:2px 0">${meta}</div>` : ''}
+            <div class="text-muted" style="font-size:12px">👤 ${escapeHtml(r.author || '匿名')} · 🕒 ${escapeHtml(r.timestamp || '')} · <span class="review-badge ${rev === '已复核' ? 'review-done' : 'review-pending'}">${escapeHtml(rev)}</span></div>
+            <div style="margin-top:4px"><a class="entry-link" href="/${encodeURIComponent(PROJECT)}/entry/${encodeURIComponent(d.entry_id)}" target="_blank">查看这条 →</a></div>
+        </div>`;
+    }).join('');
+    body.innerHTML = `
+        <div class="dup-warning">⚠️ 发现 ${dups.length} 条疑似重复（可能之前已经有同事填过了）。如果内容确实重复，建议取消并去已有条目下补充跟进；如果确定是不同信息，再点“仍然提交”。</div>
+        <div class="dup-list">${items}</div>`;
+    document.getElementById('dupModal').classList.add('active');
+}
+function closeDupModal() { document.getElementById('dupModal').classList.remove('active'); }
+async function forceSubmit() {
+    if (!pendingAdd) { closeDupModal(); return; }
+    const payload = pendingAdd;
+    closeDupModal();
+    const res = await postRow(payload, true);
+    const d = await res.json();
+    if (d.ok) {
+        closeAddModal();
+        pendingAdd = null;
+        loadRows();
+    } else {
+        alert('提交失败：' + (d.error || ''));
+    }
+}
+
+function fieldRows(r) {
+    let html = '';
+    for (const [k, v] of Object.entries(r)) {
+        if (k === 'author' || k === 'timestamp') continue;
+        if (!v) continue;
+        const val = k === '来源链接'
+            ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${escapeHtml(v)}</a>`
+            : escapeHtml(v);
+        html += `<div class="em-row"><span class="em-k">${escapeHtml(k)}</span><span class="em-v">${val}</span></div>`;
+    }
+    return html;
+}
+function openEntryModal(idx, type) {
+    const r = (type === 'company' ? companyView : newsView)[idx] || {};
+    const icon = type === 'company' ? '🏢' : '📰';
+    const title = type === 'company'
+        ? (r['企业'] || '')
+        : (r['企业'] || '') + (r['事件'] ? '：' + r['事件'] : '');
+    document.getElementById('emTitle').textContent = icon + ' ' + (title || '详情');
+    document.getElementById('emBody').innerHTML = `
+        <div class="em-fields">${fieldRows(r)}</div>
+        <div class="em-meta">
+            <div>👤 填写人：${escapeHtml(r.author || '匿名')}</div>
+            <div>🕒 填写时间：${escapeHtml(r.timestamp || '-')}</div>
+            <div>⏱️ 时效：${ageBadge(r.timestamp)}</div>
+        </div>`;
+    document.getElementById('entryModal').classList.add('active');
+}
+function closeEntryModal() { document.getElementById('entryModal').classList.remove('active'); }
 
 loadNode();
 </script>

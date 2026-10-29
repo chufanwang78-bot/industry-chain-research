@@ -20,7 +20,7 @@ if (searchInput) {
             if (data.results.length > 0) {
                 searchResults.innerHTML = data.results.map(r => {
                     const statusIcon = {DONE:'✅',WIP:'🔵',TODO:'⬜',GAP:'⚠️',HOLD:'⏸️'}[r.status] || '';
-                    return `<a href="/${encodeURIComponent(PROJECT)}/node/${r.id}">${statusIcon} ${r.id} ${r.name}</a>`;
+                    return `<a href="/${encodeURIComponent(PROJECT)}/node/${r.id}">${statusIcon} ${r.id} ${r.name}${r.parent_name ? ` (${r.parent_name})` : ""}</a>`;
                 }).join('');
                 searchResults.classList.add('has-items');
             } else {

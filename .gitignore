@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.hermes/
+logs/
+config/.secret_key
+run_before_view.out.log
+run_before_view.err.log
+run_v1.out.log
+run_v1.err.log

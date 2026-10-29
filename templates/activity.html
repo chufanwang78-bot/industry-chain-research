@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}最新动态 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>最新动态</h1>
+    <div class="page-actions">
+        <div class="view-toggle" id="feedFilter">
+            <button class="btn-toggle active" onclick="setFeedFilter('all', this)">全部</button>
+            <button class="btn-toggle" onclick="setFeedFilter('company', this)">🏢 企业</button>
+            <button class="btn-toggle" onclick="setFeedFilter('news', this)">📰 新闻</button>
+        </div>
+        <span id="feedTotal" class="text-muted"></span>
+    </div>
+</div>
+
+<div class="feed-container" id="feedList">
+    <p class="text-muted">加载中...</p>
+
+<!-- 条目详情弹窗 -->
+<div class="modal-mask" id="entryModal">
+    <div class="modal-card">
+        <div class="modal-head"><span id="emTitle">详情</span> <button class="modal-close" onclick="closeEntryModal()">×</button></div>
+        <div class="modal-body" id="emBody"></div>
+        <div class="modal-foot">
+            <a id="emNodeLink" class="btn" href="#">📍 前往节点</a>
+            <button class="btn btn-primary" onclick="closeEntryModal()">关闭</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let feedAll = [];
+let feedFilter = 'all';
+let currentItems = [];
+
+async function loadFeed() {
+    const res = await fetch(`/api/${PROJECT}/activity?limit=200`);
+    const d = await res.json();
+    feedAll = d.feed || [];
+    document.getElementById('feedTotal').textContent = '共 ' + (d.total_entries || 0) + ' 条信息';
+    renderFeed();
+}
+
+function ageBadge(ts) {
+    if (!ts) return '<span class="age-badge age-unknown">无时间</span>';
+    const d = new Date(String(ts).replace(' ', 'T'));
+    if (isNaN(d.getTime())) return `<span class="age-badge age-unknown">${escapeHtml(ts)}</span>`;
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days < 0) return '<span class="age-badge age-green">今天</span>';
+    if (days <= 30) return `<span class="age-badge age-green">${days} 天前</span>`;
+    if (days <= 90) return `<span class="age-badge age-yellow">${days} 天前</span>`;
+    return `<span class="age-badge age-red">${days} 天前</span>`;
+}
+
+function reviewBadge(r) {
+    const s = r['复核状态'] || '待复核';
+    const cls = s === '已复核' ? 'review-done' : 'review-pending';
+    return `<span class="review-badge ${cls}">${escapeHtml(s)}</span>`;
+}
+
+function gotoEntry(id) {
+    if (id && id !== 'undefined') location.href = `/${encodeURIComponent(PROJECT)}/entry/${encodeURIComponent(id)}`;
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderFeed() {
+    const items = feedFilter === 'all' ? feedAll : feedAll.filter(i => i.type === feedFilter);
+    const box = document.getElementById('feedList');
+    if (!items.length) {
+        box.innerHTML = '<div class="empty-state">暂无动态</div>';
+        return;
+    }
+    currentItems = items;
+    box.innerHTML = items.map((i, idx) => {
+        const r = i.row || {};
+        const typeIcon = i.type === 'company' ? '🏢' : '📰';
+        const title = i.type === 'company'
+            ? escapeHtml(r['企业'] || '')
+            : `${escapeHtml(r['企业'] || '')}${r['事件'] ? '：' + escapeHtml(r['事件']) : ''}`;
+        const nodePath = i.parent_name ? `${escapeHtml(i.parent_name)} / ${escapeHtml(i.node_name)}` : escapeHtml(i.node_name);
+        const link = r['来源链接'] ? `<a class="entry-link" href="${escapeHtml(r['来源链接'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">原文链接 ↗</a>` : '';
+        return `<div class="feed-item" onclick="gotoEntry('${r.entry_id}')">
+            <div class="feed-icon">${typeIcon}</div>
+            <div class="feed-body">
+                <div class="feed-title">${title}</div>
+                <div class="feed-node">📍 ${escapeHtml(i.node_id)} ${nodePath}</div>
+                <div class="feed-meta">
+                    <span>👤 ${escapeHtml(r.author || '匿名')}</span>
+                    <span>🕒 ${escapeHtml(r.timestamp || '')}</span>
+                    ${ageBadge(r.timestamp)}
+                    ${reviewBadge(r)}
+                    ${link}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function setFeedFilter(f, btn) {
+    feedFilter = f;
+    document.querySelectorAll('#feedFilter .btn-toggle').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFeed();
+}
+
+function fieldRows(r) {
+    let html = '';
+    for (const [k, v] of Object.entries(r)) {
+        if (k === 'author' || k === 'timestamp') continue;
+        if (!v) continue;
+        const val = k === '来源链接'
+            ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${escapeHtml(v)}</a>`
+            : escapeHtml(v);
+        html += `<div class="em-row"><span class="em-k">${escapeHtml(k)}</span><span class="em-v">${val}</span></div>`;
+    }
+    return html;
+}
+function openEntryModal(idx) {
+    const i = currentItems[idx];
+    const r = i.row || {};
+    const icon = i.type === 'company' ? '🏢' : '📰';
+    const title = i.type === 'company'
+        ? (r['企业'] || '')
+        : (r['企业'] || '') + (r['事件'] ? '：' + r['事件'] : '');
+    document.getElementById('emTitle').textContent = icon + ' ' + (title || '详情');
+    document.getElementById('emBody').innerHTML = `
+        <div class="em-fields">${fieldRows(r)}</div>
+        <div class="em-meta">
+            <div>👤 填写人：${escapeHtml(r.author || '匿名')}</div>
+            <div>🕒 填写时间：${escapeHtml(r.timestamp || '-')}</div>
+            <div>⏱️ 时效：${ageBadge(r.timestamp)}</div>
+            <div>📍 所属节点：${escapeHtml(i.node_id)} ${escapeHtml(i.node_name)}${i.parent_name ? '（' + escapeHtml(i.parent_name) + '）' : ''}</div>
+        </div>`;
+    document.getElementById('emNodeLink').href = `/${encodeURIComponent(PROJECT)}/node/${encodeURIComponent(i.node_id)}`;
+    document.getElementById('entryModal').classList.add('active');
+}
+function closeEntryModal() { document.getElementById('entryModal').classList.remove('active'); }
+
+loadFeed();
+</script>
+{% endblock %}

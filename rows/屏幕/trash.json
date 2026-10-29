@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "deleted_at": "2026-10-23 10:58:49",
+      "deleted_by": "zmjjkk",
+      "original_node": "01.01.01",
+      "row": {
+        "企业": "登录测试企业A",
+        "所在地": "合肥",
+        "主要产品": "测试膜",
+        "来源": "内部记录",
+        "entry_id": "12a4be965ece",
+        "author": "zmjjkk",
+        "author_username": "admin",
+        "timestamp": "2026-10-23 10:58:49",
+        "复核状态": "待复核",
+        "纠错状态": "无"
+      }
+    }
+  ]
+}

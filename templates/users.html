@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}账号管理 — 产业链研究工作台{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👥 账号管理</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openCreateModal()">＋ 新建账号</button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table" id="usersTable">
+        <thead>
+            <tr>
+                <th>账号</th>
+                <th>显示名</th>
+                <th>角色</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="usersBody"><tr><td colspan="6" class="text-muted">加载中...</td></tr></tbody>
+    </table>
+</div>
+
+<!-- 新建账号弹窗 -->
+<div class="modal-mask" id="createModal">
+    <div class="modal-card">
+        <div class="modal-head">＋ 新建账号 <button class="modal-close" onclick="closeCreateModal()">×</button></div>
+        <div class="modal-body">
+            <label class="form-label">登录账号（字母/数字，如工号）</label>
+            <input type="text" id="u_username" class="form-input" placeholder="例如：zhangsan">
+            <label class="form-label">显示姓名（填写信息时记录的名字）</label>
+            <input type="text" id="u_display" class="form-input" placeholder="例如：张三">
+            <label class="form-label">初始密码</label>
+            <input type="text" id="u_password" class="form-input" placeholder="至少 6 位，建议临时密码">
+            <label class="form-label">角色</label>
+            <select id="u_role" class="form-input">
+                <option value="member">成员</option>
+                <option value="admin">管理员</option>
+            </select>
+        </div>
+        <div class="modal-foot">
+            <button class="btn" onclick="closeCreateModal()">取消</button>
+            <button class="btn btn-primary" onclick="createUser()">创建</button>
+        </div>
+    </div>
+</div>
+
+<!-- 修改显示名弹窗 -->
+<div class="modal-mask" id="nameModal">
+    <div class="modal-card">
+        <div class="modal-head">修改显示名 <button class="modal-close" onclick="closeNameModal()">×</button></div>
+        <div class="modal-body">
+            <label class="form-label">新显示名</label>
+            <input type="text" id="n_display" class="form-input">
+        </div>
+        <div class="modal-foot">
+            <button class="btn" onclick="closeNameModal()">取消</button>
+            <button class="btn btn-primary" onclick="saveName()">保存</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentUsername = '';
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadUsers() {
+    const res = await fetch('/api/users');
+    const d = await res.json();
+    const rows = (d.users || []).map(u => {
+        const role = u.role === 'admin' ? '<span class="badge badge-hold">管理员</span>' : '<span class="badge badge-todo">成员</span>';
+        const st = u.enabled ? '<span class="badge badge-done">启用</span>' : '<span class="badge badge-gap">停用</span>';
+        return `<tr>
+            <td class="mono">${escapeHtml(u.username)}</td>
+            <td>${escapeHtml(u.display_name)}</td>
+            <td>${role}</td>
+            <td>${st}</td>
+            <td>${escapeHtml(u.created_at || '')}</td>
+            <td>
+                <button class="btn btn-sm" onclick="openNameModal('${escapeHtml(u.username)}','${escapeHtml(u.display_name)}')">改显示名</button>
+                <button class="btn btn-sm" onclick="resetPassword('${escapeHtml(u.username)}')">重置密码</button>
+                <button class="btn btn-sm" onclick="toggleUser('${escapeHtml(u.username)}', ${u.enabled ? 'false' : 'true'})">${u.enabled ? '停用' : '启用'}</button>
+            </td>
+        </tr>`;
+    }).join('');
+    document.getElementById('usersBody').innerHTML = rows;
+}
+
+function openCreateModal() { document.getElementById('createModal').classList.add('active'); }
+function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); }
+
+async function createUser() {
+    const username = document.getElementById('u_username').value.trim();
+    const display_name = document.getElementById('u_display').value.trim();
+    const password = document.getElementById('u_password').value;
+    const role = document.getElementById('u_role').value;
+    if (!username || !display_name || !password) { alert('请填写完整'); return; }
+    const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, display_name, password, role })
+    });
+    const d = await res.json();
+    if (d.ok) { closeCreateModal(); loadUsers(); } else { alert('创建失败：' + (d.error || '')); }
+}
+
+function openNameModal(username, display) {
+    currentUsername = username;
+    document.getElementById('n_display').value = display;
+    document.getElementById('nameModal').classList.add('active');
+}
+function closeNameModal() { document.getElementById('nameModal').classList.remove('active'); }
+
+async function saveName() {
+    const display_name = document.getElementById('n_display').value.trim();
+    if (!display_name) { alert('请填写显示名'); return; }
+    const res = await fetch(`/api/users/${encodeURIComponent(currentUsername)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ display_name })
+    });
+    const d = await res.json();
+    if (d.ok) { closeNameModal(); loadUsers(); } else { alert('保存失败：' + (d.error || '')); }
+}
+
+async function resetPassword(username) {
+    const pw = prompt(`为「${username}」设置新密码（至少 6 位）：`);
+    if (!pw) return;
+    const res = await fetch(`/api/users/${encodeURIComponent(username)}/password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+    });
+    const d = await res.json();
+    if (d.ok) { alert('已重置，请把新密码告诉该同事'); } else { alert('重置失败：' + (d.error || '')); }
+}
+
+async function toggleUser(username, enabled) {
+    const res = await fetch(`/api/users/${encodeURIComponent(username)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled })
+    });
+    const d = await res.json();
+    if (d.ok) { loadUsers(); } else { alert('操作失败：' + (d.error || '')); }
+}
+
+loadUsers();
+</script>
+{% endblock %}

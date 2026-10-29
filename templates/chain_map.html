@@ -93,50 +93,46 @@ function getFilteredNodes() {
     });
 }
 
-function renderChart() {
-    if (!graphData) return;
-    const filteredNodes = getFilteredNodes();
-    const ids = new Set(filteredNodes.map(n => n.id));
 
-    // 节点多时固定高度会让标签重叠 —— 树形图按叶子数撑高画布，页面滚动查看
-    const el = document.getElementById('chainChart');
-    if (currentView === 'tree') {
-        const leafCount = filteredNodes.filter(n =>
-            !filteredNodes.some(c => c.meta.parent === n.id)
-        ).length;
-        const needed = leafCount * 42 + 160;
-        el.style.height = Math.max(window.innerHeight - 160, needed) + 'px';
-    } else {
-        el.style.height = (window.innerHeight - 160) + 'px';
-    }
-
+function initChart() {
     if (!chart) {
         chart = echarts.init(document.getElementById('chainChart'));
         chart.on('click', params => {
-            if (params.data && params.data.id && !params.data.meta?.isSynthetic) {
-                showPopup(params.data);
-            }
+            const d = params.data;
+            if (!d || !d.id || (d.meta && d.meta.isSynthetic)) return;
+            showPopup(d);
         });
     } else {
         chart.resize();
     }
+}
+
+function renderChart() {
+    if (!graphData) return;
+    const filteredNodes = getFilteredNodes();
+    const ids = new Set(filteredNodes.map(n => n.id));
+    const el = document.getElementById('chainChart');
 
     if (currentView === 'tree') {
-        renderTree(filteredNodes, ids);
+        const tree = buildTree(filteredNodes);
+        // 树形图按可见叶子数撑高画布，页面滚动查看
+        const needed = tree.leafCount * 42 + 160;
+        el.style.height = Math.max(window.innerHeight - 160, needed) + 'px';
+        initChart();
+        renderTree(tree.data);
     } else {
+        el.style.height = (window.innerHeight - 160) + 'px';
+        initChart();
         renderGraph(filteredNodes, ids);
     }
 }
 
-function renderTree(filteredNodes, ids) {
+// 不做收起/展开：始终把完整树放进数据，每次从干净数据重新渲染
+function buildTree(filteredNodes) {
     const nodeMap = {};
     filteredNodes.forEach(n => {
         nodeMap[n.id] = {
-            name: n.name,
-            id: n.id,
-            meta: n.meta,
-            itemStyle: n.itemStyle,
-            children: []
+            name: n.name, id: n.id, meta: n.meta, itemStyle: n.itemStyle
         };
     });
 
@@ -144,17 +140,19 @@ function renderTree(filteredNodes, ids) {
     filteredNodes.forEach(n => {
         const parentId = n.meta.parent;
         if (parentId && nodeMap[parentId]) {
-            nodeMap[parentId].children.push(nodeMap[n.id]);
+            const parent = nodeMap[parentId];
+            if (!parent.children) parent.children = [];
+            parent.children.push(nodeMap[n.id]);
         } else if (!parentId) {
             roots.push(nodeMap[n.id]);
         }
     });
 
-    let treeData = roots;
+    let data = roots;
     if (roots.length > 0) {
         // ECharts 树形图只渲染 data 数组里的第一个根节点，
         // 多根节点（如 LCD + OLED）必须包在一个合成根下才能全部显示
-        treeData = [{
+        data = [{
             name: PROJECT,
             id: '__root__',
             meta: {
@@ -166,13 +164,27 @@ function renderTree(filteredNodes, ids) {
         }];
     }
 
+    // 统计当前可见叶子数（用于撑高画布）
+    let leafCount = 0;
+    (function walk(list) {
+        if (!list || !list.length) return;
+        list.forEach(nd => {
+            if (nd.children && nd.children.length) walk(nd.children);
+            else if (nd.id !== '__root__') leafCount++;
+        });
+    })(data);
+
+    return { data, leafCount: Math.max(leafCount, 1) };
+}
+
+function renderTree(treeData) {
+    const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
     chart.setOption({
         tooltip: {
             trigger: 'item',
             formatter: params => {
                 const d = params.data;
                 if (!d.meta || d.meta.isSynthetic) return d.name;
-                const statusMap = {DONE:'✅ 已完成',WIP:'🔵 研究中',TODO:'⬜ 未开始',GAP:'⚠️ 待补充',HOLD:'⏸️ 暂缓'};
                 return `<strong>${d.id} ${d.name}</strong><br>
                     状态: ${statusMap[d.meta.status] || d.meta.status}<br>
                     点击查看详情`;
@@ -206,10 +218,11 @@ function renderTree(filteredNodes, ids) {
                     fontSize: 13,
                 }
             },
-            expandAndCollapse: true,
+            // 不做收起/展开：整棵树始终完整显示
+            expandAndCollapse: false,
             animationDuration: 0,
             animationDurationUpdate: 0,
-            initialTreeDepth: 4,
+            initialTreeDepth: -1,
         }]
     }, true);
 }

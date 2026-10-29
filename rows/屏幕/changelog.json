@@ -1,0 +1,664 @@
+{
+  "log": [
+    {
+      "time": "2026-10-21 09:13:47",
+      "user": "王楚帆",
+      "action": "补充企业",
+      "node": "01.01",
+      "detail": {
+        "企业": "上海电机",
+        "所在地": "上海",
+        "主要产品": "工业设计",
+        "产业化状态": "量产",
+        "来源链接": "http://localhost:5000",
+        "author": "王楚帆",
+        "timestamp": "2026-10-21 09:13:47"
+      }
+    },
+    {
+      "time": "2026-10-21 09:16:11",
+      "user": "王楚帆",
+      "action": "认领节点",
+      "node": "01",
+      "detail": {
+        "owner": "王楚帆"
+      }
+    },
+    {
+      "time": "2026-10-21 09:46:41",
+      "user": "cc",
+      "action": "认领节点",
+      "node": "01",
+      "detail": {
+        "owner": "cc"
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01",
+      "detail": {
+        "type": "company",
+        "added": 22
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01",
+      "detail": {
+        "type": "news",
+        "added": 10
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01",
+      "detail": {
+        "type": "company",
+        "added": 5
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.01",
+      "detail": {
+        "type": "company",
+        "added": 5
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.01",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.02",
+      "detail": {
+        "type": "company",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.02",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.03",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:47",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.04",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.06",
+      "detail": {
+        "type": "company",
+        "added": 5
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.01.06",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02",
+      "detail": {
+        "type": "company",
+        "added": 13
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02",
+      "detail": {
+        "type": "news",
+        "added": 7
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.01",
+      "detail": {
+        "type": "company",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.01",
+      "detail": {
+        "type": "news",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.02",
+      "detail": {
+        "type": "company",
+        "added": 12
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.02",
+      "detail": {
+        "type": "news",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.03",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.03",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.04",
+      "detail": {
+        "type": "company",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.04",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.06",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.07",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.08",
+      "detail": {
+        "type": "company",
+        "added": 3
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.08",
+      "detail": {
+        "type": "news",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.09",
+      "detail": {
+        "type": "company",
+        "added": 5
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.02.09",
+      "detail": {
+        "type": "news",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.03",
+      "detail": {
+        "type": "company",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.03",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.03.02",
+      "detail": {
+        "type": "company",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.03.02",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.05",
+      "detail": {
+        "type": "company",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.05",
+      "detail": {
+        "type": "news",
+        "added": 4
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.06",
+      "detail": {
+        "type": "company",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "01.07",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02",
+      "detail": {
+        "type": "company",
+        "added": 10
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02",
+      "detail": {
+        "type": "news",
+        "added": 3
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02.01",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02.02",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02.03",
+      "detail": {
+        "type": "company",
+        "added": 2
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02.03",
+      "detail": {
+        "type": "news",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 09:14:48",
+      "user": "zmjjkk",
+      "action": "迁移导入",
+      "node": "02.04",
+      "detail": {
+        "type": "company",
+        "added": 1
+      }
+    },
+    {
+      "time": "2026-10-22 14:07:12",
+      "user": "zmjjkk",
+      "action": "添加跟进",
+      "node": "066d5d4ff45e",
+      "detail": {
+        "类型": "跟进备注",
+        "日期": "2026-10-22",
+        "内容": "（测试）跟进功能验证通过，可删除。",
+        "author": "zmjjkk",
+        "timestamp": "2026-10-22 14:07:12"
+      }
+    },
+    {
+      "time": "2026-10-23 09:22:57",
+      "user": "zmjjkk",
+      "action": "补充新闻",
+      "node": "01.01.01",
+      "detail": {
+        "企业": "查重测试XYZ",
+        "事件": "测试事件",
+        "日期": "2026-10-23",
+        "entry_id": "55da19785611",
+        "author": "zmjjkk",
+        "timestamp": "2026-10-23 09:22:57",
+        "复核状态": "待复核"
+      }
+    },
+    {
+      "time": "2026-10-23 09:22:57",
+      "user": "zmjjkk",
+      "action": "标记复核",
+      "node": "01.01.01",
+      "detail": {
+        "entry_id": "55da19785611",
+        "status": "已复核",
+        "reviewer": "zmjjkk"
+      }
+    },
+    {
+      "time": "2026-10-23 09:23:08",
+      "user": "zmjjkk",
+      "action": "补充新闻",
+      "node": "01.01.01",
+      "detail": {
+        "日期": "2026-10-23",
+        "企业": "查重测试WSL",
+        "事件": "某项目签约",
+        "来源": "内部记录",
+        "entry_id": "e0e414715bc5",
+        "author": "zmjjkk",
+        "timestamp": "2026-10-23 09:23:08",
+        "复核状态": "待复核"
+      }
+    },
+    {
+      "time": "2026-10-23 09:23:08",
+      "user": "zmjjkk",
+      "action": "补充新闻",
+      "node": "01.01.01",
+      "detail": {
+        "日期": "2026-10-23",
+        "企业": "查重测试WSL",
+        "事件": "某项目签约",
+        "来源": "内部记录",
+        "entry_id": "968ffa184462",
+        "author": "zmjjkk",
+        "timestamp": "2026-10-23 09:23:08",
+        "复核状态": "待复核"
+      }
+    },
+    {
+      "time": "2026-10-23 09:23:08",
+      "user": "zmjjkk",
+      "action": "标记复核",
+      "node": "01.01.01",
+      "detail": {
+        "entry_id": "968ffa184462",
+        "status": "已复核",
+        "reviewer": "zmjjkk"
+      }
+    },
+    {
+      "time": "2026-10-23 10:30:52",
+      "user": "zmjjkk",
+      "action": "补充企业",
+      "node": "01.01.01",
+      "detail": {
+        "企业": "编辑测试企业ABC",
+        "所在地": "测试市",
+        "主要产品": "测试膜",
+        "来源": "内部记录",
+        "entry_id": "f07ba8be6e16",
+        "author": "zmjjkk",
+        "timestamp": "2026-10-23 10:30:52",
+        "复核状态": "待复核",
+        "纠错状态": "无"
+      }
+    },
+    {
+      "time": "2026-10-23 10:30:53",
+      "user": "zmjjkk",
+      "action": "编辑条目",
+      "node": "01.01.01",
+      "detail": {
+        "entry_id": "f07ba8be6e16",
+        "updates": {
+          "所在地": "合肥市",
+          "主要产品": "扩散膜"
+        }
+      }
+    },
+    {
+      "time": "2026-10-23 10:30:53",
+      "user": "李四",
+      "action": "添加跟进",
+      "node": "f07ba8be6e16",
+      "detail": {
+        "类型": "纠错",
+        "日期": "2026-10-23",
+        "内容": "这条企业信息地址有误",
+        "fid": "e3255edcfa02",
+        "author": "李四",
+        "timestamp": "2026-10-23 10:30:53",
+        "状态": "待处理"
+      }
+    },
+    {
+      "time": "2026-10-23 10:30:53",
+      "user": "zmjjkk",
+      "action": "纠错已处理",
+      "node": "f07ba8be6e16",
+      "detail": {
+        "fid": "e3255edcfa02"
+      }
+    },
+    {
+      "time": "2026-10-23 10:30:53",
+      "user": "zmjjkk",
+      "action": "删除条目",
+      "node": "01.01.01",
+      "detail": {
+        "entry_id": "f07ba8be6e16",
+        "deleted": {
+          "企业": "编辑测试企业ABC",
+          "所在地": "合肥市",
+          "主要产品": "扩散膜",
+          "来源": "内部记录",
+          "entry_id": "f07ba8be6e16",
+          "author": "zmjjkk",
+          "timestamp": "2026-10-23 10:30:52",
+          "复核状态": "待复核",
+          "纠错状态": "无",
+          "最后编辑人": "zmjjkk",
+          "最后编辑时间": "2026-10-23 10:30:53"
+        }
+      }
+    },
+    {
+      "time": "2026-10-23 10:58:49",
+      "user": "zmjjkk",
+      "action": "补充企业",
+      "node": "01.01.01",
+      "detail": {
+        "企业": "登录测试企业A",
+        "所在地": "合肥",
+        "主要产品": "测试膜",
+        "来源": "内部记录",
+        "entry_id": "12a4be965ece",
+        "author": "zmjjkk",
+        "author_username": "admin",
+        "timestamp": "2026-10-23 10:58:49",
+        "复核状态": "待复核",
+        "纠错状态": "无"
+      }
+    },
+    {
+      "time": "2026-10-23 10:58:49",
+      "user": "zmjjkk",
+      "action": "删除条目",
+      "node": "01.01.01",
+      "detail": {
+        "entry_id": "12a4be965ece",
+        "deleted": {
+          "企业": "登录测试企业A",
+          "所在地": "合肥",
+          "主要产品": "测试膜",
+          "来源": "内部记录",
+          "entry_id": "12a4be965ece",
+          "author": "zmjjkk",
+          "author_username": "admin",
+          "timestamp": "2026-10-23 10:58:49",
+          "复核状态": "待复核",
+          "纠错状态": "无"
+        }
+      }
+    }
+  ]
+}
